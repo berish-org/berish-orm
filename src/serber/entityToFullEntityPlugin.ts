@@ -11,10 +11,10 @@ export interface IFullEntity extends IRaw<RawTypeEnum.fullEntity> {
 }
 
 export const entityToFullEntityPlugin: ISerberPlugin<Entity, IFullEntity, {}> = {
-  isForSerialize: obj => obj instanceof Entity,
-  isForDeserialize: obj => isRaw(obj) && obj.__type__ === RawTypeEnum.fullEntity,
-  isAlreadySerialized: obj => entityToFullEntityPlugin.isForDeserialize(obj as IFullEntity),
-  isAlreadyDeserialized: obj => entityToFullEntityPlugin.isForSerialize(obj as Entity),
+  isForSerialize: (obj) => obj instanceof Entity,
+  isForDeserialize: (obj) => isRaw(obj) && obj.__type__ === RawTypeEnum.fullEntity,
+  isAlreadySerialized: (obj) => entityToFullEntityPlugin.isForDeserialize(obj as IFullEntity),
+  isAlreadyDeserialized: (obj) => entityToFullEntityPlugin.isForSerialize(obj as Entity),
   serialize: (obj, options) => {
     const className = obj.className;
     const { id, ...attributes } = obj.attributes;

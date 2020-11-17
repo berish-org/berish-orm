@@ -25,7 +25,7 @@ export class Edge<Current extends Entity, Remote extends Entity> {
     srcCtor: string | (new () => Src),
     edgeName: string,
     dstCtor: string | (new () => Dst),
-    entityId: () => string
+    entityId: () => string,
   ) {
     const edge = new Edge<Src, Dst>(srcCtor, edgeName, dstCtor, 'src', entityId);
     return edge;
@@ -35,7 +35,7 @@ export class Edge<Current extends Entity, Remote extends Entity> {
     srcCtor: string | (new () => Src),
     edgeName: string,
     dstCtor: string | (new () => Dst),
-    entityId: () => string
+    entityId: () => string,
   ) {
     const edge = new Edge<Dst, Src>(srcCtor, edgeName, dstCtor, 'dst', entityId);
     return edge;
@@ -65,7 +65,7 @@ export class Edge<Current extends Entity, Remote extends Entity> {
     edgeName: string,
     dstCtor: string | (new () => Entity),
     mode: 'src' | 'dst',
-    entityId: () => string
+    entityId: () => string,
   ) {
     this._classNameSrc = typeof srcCtor === 'string' ? srcCtor : getClassNameByClass(srcCtor);
     this._classNameDst = typeof dstCtor === 'string' ? dstCtor : getClassNameByClass(dstCtor);
@@ -107,24 +107,24 @@ export class Edge<Current extends Entity, Remote extends Entity> {
 
   add(obj: Remote | Remote[] | string | string[]) {
     const items = Array.isArray(obj) ? obj : [obj];
-    const ids = items.map(m => (typeof m === 'string' ? m : m.id));
-    if (this._mode === 'dst') this.queue.data(data => ({ ...data, dstAdded: (data.dstAdded || []).concat(ids) }));
-    else this.queue.data(data => ({ ...data, srcAdded: (data.srcAdded || []).concat(ids) }));
+    const ids = items.map((m) => (typeof m === 'string' ? m : m.id));
+    if (this._mode === 'dst') this.queue.data((data) => ({ ...data, dstAdded: (data.dstAdded || []).concat(ids) }));
+    else this.queue.data((data) => ({ ...data, srcAdded: (data.srcAdded || []).concat(ids) }));
     return this;
   }
 
   remove(obj: Remote | Remote[] | string | string[]) {
     const items = Array.isArray(obj) ? obj : [obj];
-    const ids = items.map(m => (typeof m === 'string' ? m : m.id));
-    if (this._mode === 'dst') this.queue.data(data => ({ ...data, dstRemoved: (data.dstRemoved || []).concat(ids) }));
-    else this.queue.data(data => ({ ...data, srcRemoved: (data.srcRemoved || []).concat(ids) }));
+    const ids = items.map((m) => (typeof m === 'string' ? m : m.id));
+    if (this._mode === 'dst') this.queue.data((data) => ({ ...data, dstRemoved: (data.dstRemoved || []).concat(ids) }));
+    else this.queue.data((data) => ({ ...data, srcRemoved: (data.srcRemoved || []).concat(ids) }));
     return this;
   }
 
   execute(manager: Manager) {
     this.queue.data({ manager });
     return new Promise<void>(async (resolve, reject) => {
-      await this.queue.execute(err => reject(err));
+      await this.queue.execute((err) => reject(err));
       resolve();
     }).finally(() => this.initQueueData());
   }

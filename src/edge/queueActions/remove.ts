@@ -8,13 +8,13 @@ async function remove(data: IEdgeQueueActionData) {
   if (srcRemoved) {
     // const query = new Query(edge.fullEdgeName).contains('dst', srcRemoved);
     // await query.remove(db);
-    const items = srcRemoved.map(m => crypto.SHA256(`${edge.entityId}-${m}`).toString());
+    const items = srcRemoved.map((m) => crypto.SHA256(`${edge.entityId}-${m}`).toString());
     await manager.db.delete(new Query(edge.fullEdgeName).ids(items).json);
   }
   if (dstRemoved) {
     // const query = new Query(edge.fullEdgeName).contains('src', dstRemoved);
     // await query.remove(db);
-    const items = dstRemoved.map(m => crypto.SHA256(`${m}-${edge.entityId}`).toString());
+    const items = dstRemoved.map((m) => crypto.SHA256(`${m}-${edge.entityId}`).toString());
     await manager.db.delete(new Query(edge.fullEdgeName).ids(items).json);
   }
 }

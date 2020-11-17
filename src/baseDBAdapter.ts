@@ -21,7 +21,7 @@ export abstract class BaseDBAdapter<IInitializeParams> {
   public abstract find(data: IQueryData): Promise<IBaseDBItem[]>;
   public abstract subscribe(
     data: IQueryData,
-    callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem) => any
+    callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem) => any,
   ): () => any;
   public abstract emptyFieldLiteral?(): any;
 }

@@ -87,7 +87,7 @@ export class Entity {
     if (!this.getSystem(systemName))
       this.setSystem(
         systemName,
-        Edge.create(this.className, edgeName, dstClassName, () => this.id)
+        Edge.create(this.className, edgeName, dstClassName, () => this.id),
       );
     return this.getSystem(systemName) as Edge<this, Dst>;
   }
@@ -97,7 +97,7 @@ export class Entity {
     if (!this.getSystem(systemName))
       this.setSystem(
         systemName,
-        Edge.createFromDst(srcClassName, edgeName, this.className, () => this.id)
+        Edge.createFromDst(srcClassName, edgeName, this.className, () => this.id),
       );
     return this.getSystem(systemName) as Edge<this, Src>;
   }
@@ -115,7 +115,7 @@ export class Entity {
     if (!this.getSystem(systemName))
       this.setSystem(
         systemName,
-        Plain.create(this.className, plainName, () => this.id)
+        Plain.create(this.className, plainName, () => this.id),
       );
     return this.getSystem(systemName) as Plain<this>;
   }

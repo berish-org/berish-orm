@@ -22,7 +22,7 @@ export const undefinedDBPlugin: ISerberPlugin<any, any, IUndefinedDBPluginParams
     return undefined;
   },
 
-  deserialize: obj => {
+  deserialize: (obj) => {
     return undefined;
   },
 };

@@ -4,7 +4,6 @@ export * from './entity';
 export * from './query';
 export * from './serber';
 export * from './manager';
-export * from './utils';
 export * from './registrator';
 export * from './baseDBAdapter';
 export * from './baseFileAdapter';

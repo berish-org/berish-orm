@@ -393,6 +393,13 @@
   dependencies:
     "@berish/linq" "^1.0.5"
 
+"@berish/emitter@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@berish/emitter/-/emitter-1.0.0.tgz#996c385e2fa216f14caeb79688eb763137d07055"
+  integrity sha512-xczGzkLl9sJeJwSfO2KNYAqcK4bCSIPplNFVINisazqi1xUOwknA2ZaQSt6jMwlAxdPz1HuLqJXou8lx8szJJg==
+  dependencies:
+    berish-guid "^2.0.0"
+
 "@berish/linq@^1.0.4", "@berish/linq@^1.0.5", "@berish/linq@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@berish/linq/-/linq-1.1.0.tgz#da62d357b65bbd0f3c0bd2aa930d21b6bb05568a"
@@ -411,6 +418,11 @@
     "@berish/linq" "^1.0.4"
     "@berish/pathof" "^1.1.0"
     "@berish/typeof" "^1.0.0"
+
+"@berish/try-call@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@berish/try-call/-/try-call-1.0.0.tgz#56cea05785b38a524787298c11b955dfaf8519dc"
+  integrity sha512-EN0ZjALcgidR22RZyerhPkbaRZXsbPrTJUMhbnze7FQwK7rmgQK8EAAgFRNl878MBIBvkpFc0qy7XVU18CA7Cg==
 
 "@berish/typeof@^1.0.0":
   version "1.0.0"

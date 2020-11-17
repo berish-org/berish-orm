@@ -32,10 +32,10 @@ export interface IEntityToBaseDBItemPluginOptions {
  * При десериализации использовать строго асинхронный метод и передать параметры
  */
 export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntityToBaseDBItemPluginOptions> = {
-  isForSerialize: obj => obj instanceof Entity,
+  isForSerialize: (obj) => obj instanceof Entity,
   isForDeserialize: (obj, options) => obj && typeof obj === 'object' && !!options[SYMBOL_SERBER_ENTITY_CLASSNAME],
-  isAlreadySerialized: obj => obj && typeof obj === 'object' && 'id' in obj && !(obj instanceof Entity),
-  isAlreadyDeserialized: obj => obj instanceof Entity,
+  isAlreadySerialized: (obj) => obj && typeof obj === 'object' && 'id' in obj && !(obj instanceof Entity),
+  isAlreadyDeserialized: (obj) => obj instanceof Entity,
   serialize: (obj, options) => {
     const { id, ...attributes } = obj.attributes;
     /**
@@ -67,7 +67,7 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
     const { id, ...attributes } = obj;
     const entries = Object.entries(attributes);
 
-    const cachedEntity = cacheEntities?.filter(m => m.id === id && m.className === className)[0];
+    const cachedEntity = cacheEntities?.filter((m) => m.id === id && m.className === className)[0];
 
     if (cachedEntity) {
       if (cachedEntity.isFetched) return cachedEntity;

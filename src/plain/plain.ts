@@ -32,7 +32,7 @@ export class Plain<Current extends Entity> {
   static createFromDst<Current extends Entity>(
     ctor: string | (new () => Current),
     plainName: string,
-    entityId: () => string
+    entityId: () => string,
   ) {
     const plain = new Plain<Current>(ctor, plainName, 'dst', entityId);
     return plain;
@@ -100,33 +100,33 @@ export class Plain<Current extends Entity> {
     const query = new Query<Current>(this.className);
     const plainQuery = new Query<Entity>(this.fullPlainName).equalTo(
       this._mode === 'src' ? 'dst' : 'src',
-      this.entityId
+      this.entityId,
     );
     return query.matchesKeyInQuery('id', this._mode, plainQuery);
   }
 
   add(obj: Current | Current[] | string | string[]) {
     const items = Array.isArray(obj) ? obj : [obj];
-    const ids = items.map(m => (typeof m === 'string' ? m : m.id));
+    const ids = items.map((m) => (typeof m === 'string' ? m : m.id));
     if (this._mode === 'dst')
-      this.queue.data(data => ({ ...data, dstAdded: LINQ.from(data.dstAdded || []).concat(ids) }));
-    else this.queue.data(data => ({ ...data, srcAdded: LINQ.from(data.srcAdded || []).concat(ids) }));
+      this.queue.data((data) => ({ ...data, dstAdded: LINQ.from(data.dstAdded || []).concat(ids) }));
+    else this.queue.data((data) => ({ ...data, srcAdded: LINQ.from(data.srcAdded || []).concat(ids) }));
     return this;
   }
 
   remove(obj: Current | Current[] | string | string[]) {
     const items = Array.isArray(obj) ? obj : [obj];
-    const ids = items.map(m => (typeof m === 'string' ? m : m.id));
+    const ids = items.map((m) => (typeof m === 'string' ? m : m.id));
     if (this._mode === 'dst')
-      this.queue.data(data => ({ ...data, dstRemoved: LINQ.from(data.dstRemoved || []).concat(ids) }));
-    else this.queue.data(data => ({ ...data, srcRemoved: LINQ.from(data.srcRemoved || []).concat(ids) }));
+      this.queue.data((data) => ({ ...data, dstRemoved: LINQ.from(data.dstRemoved || []).concat(ids) }));
+    else this.queue.data((data) => ({ ...data, srcRemoved: LINQ.from(data.srcRemoved || []).concat(ids) }));
     return this;
   }
 
   execute(manager: Manager) {
     this.queue.data({ manager });
     return new Promise<void>(async (resolve, reject) => {
-      await this.queue.execute(err => reject(err));
+      await this.queue.execute((err) => reject(err));
       resolve();
     }).finally(() => this.initQueueData());
   }

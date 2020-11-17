@@ -33,7 +33,7 @@ export class Query<T extends Entity> {
 
   public static and<T extends Entity>(...queries: Query<T>[]) {
     if (queries.length <= 0) throw new Error('Query.and needs one or more queries in params');
-    if (queries.some(m => m.className !== queries[0].className))
+    if (queries.some((m) => m.className !== queries[0].className))
       throw new Error('Query.and needs every className equals');
     let main = new Query<T>(queries[0].className);
     for (const query of queries) {
@@ -48,7 +48,7 @@ export class Query<T extends Entity> {
   public static append<TQuery extends Query<any>, T extends keyof IQueryData>(
     data: TQuery,
     filterName: T,
-    value: IQueryData[T]
+    value: IQueryData[T],
   ): TQuery {
     if (!data) return null;
     const oldJSON = data.json;
@@ -156,7 +156,7 @@ export class Query<T extends Entity> {
   }
 
   public ids(ids: string[]): this {
-    if (ids.length <= 0 || ids.every(m => typeof m === 'string' && !!m) === false)
+    if (ids.length <= 0 || ids.every((m) => typeof m === 'string' && !!m) === false)
       throw new Error(`FP-ORM: Query.ids arguments has no String values or is empty. Classname: ${this.className}`);
     return Query.append(this, 'ids', ids || []);
   }
@@ -202,7 +202,7 @@ export class Query<T extends Entity> {
           this.className,
           rawArray,
           deep,
-          rawArray.map(m => m && m.id).filter(Boolean)
+          rawArray.map((m) => m && m.id).filter(Boolean),
         );
         cb(oldValueDes, newValueDes);
       }

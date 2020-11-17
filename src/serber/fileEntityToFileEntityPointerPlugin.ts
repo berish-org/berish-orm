@@ -31,11 +31,11 @@ export const fileEntityToFileEntityPointerPlugin: ISerberPlugin<
   IFileEntityToFilePointerPluginOptions
 > = {
   isForSerialize: (obj, options) => obj instanceof FileEntity,
-  isForDeserialize: obj => isRaw(obj) && obj.__type__ === RawTypeEnum.fileEntityPointer,
+  isForDeserialize: (obj) => isRaw(obj) && obj.__type__ === RawTypeEnum.fileEntityPointer,
   isAlreadySerialized: (obj, options) => fileEntityToFileEntityPointerPlugin.isForDeserialize(obj as IFilePointer),
   isAlreadyDeserialized: (obj, options) =>
     fileEntityToFileEntityPointerPlugin.isForSerialize(obj as FileEntity, options),
-  serialize: obj => ({ __type__: RawTypeEnum.fileEntityPointer, link: obj.id }),
+  serialize: (obj) => ({ __type__: RawTypeEnum.fileEntityPointer, link: obj.id }),
   deserialize: (obj, options) => {
     const link = obj.link;
     if (!link) return null;
@@ -44,7 +44,7 @@ export const fileEntityToFileEntityPointerPlugin: ISerberPlugin<
     const forLoadFiles = options[SYMBOL_SERBER_FOR_LOAD_FILE_ENTITIES];
 
     if (cacheFiles) {
-      const cache = options[SYMBOL_SERBER_CACHE_FILE_ENTITIES].filter(m => m.id === link)[0];
+      const cache = options[SYMBOL_SERBER_CACHE_FILE_ENTITIES].filter((m) => m.id === link)[0];
       if (cache) return cache;
     }
 

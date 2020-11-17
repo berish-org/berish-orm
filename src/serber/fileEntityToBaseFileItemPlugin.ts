@@ -17,12 +17,12 @@ export const fileEntityToBaseFileItemPlugin: ISerberPlugin<
   IBaseFileItem,
   IFileEntityToBaseFileItemPluginOptions
 > = {
-  isForSerialize: obj => obj instanceof FileEntity,
-  isForDeserialize: obj => obj && typeof obj === 'object' && 'id' in obj && 'name' in obj,
-  isAlreadySerialized: obj =>
+  isForSerialize: (obj) => obj instanceof FileEntity,
+  isForDeserialize: (obj) => obj && typeof obj === 'object' && 'id' in obj && 'name' in obj,
+  isAlreadySerialized: (obj) =>
     !(obj instanceof FileEntity) && fileEntityToBaseFileItemPlugin.isForDeserialize(obj as IBaseFileItem),
-  isAlreadyDeserialized: obj => fileEntityToBaseFileItemPlugin.isForSerialize(obj as FileEntity),
-  serialize: obj => {
+  isAlreadyDeserialized: (obj) => fileEntityToBaseFileItemPlugin.isForSerialize(obj as FileEntity),
+  serialize: (obj) => {
     const { id, name, cacheData } = obj;
     const baseFile: IBaseFileItem = { id, name, data: cacheData };
     return baseFile;
@@ -30,7 +30,7 @@ export const fileEntityToBaseFileItemPlugin: ISerberPlugin<
   deserialize: (obj, options) => {
     const { id, name, data } = obj;
     const fileEntity = options[SYMBOL_SERBER_FILES]
-      ? options[SYMBOL_SERBER_FILES].filter(m => m.id === id)[0]
+      ? options[SYMBOL_SERBER_FILES].filter((m) => m.id === id)[0]
       : new FileEntity();
     fileEntity.setId(id);
     fileEntity.setName(name);

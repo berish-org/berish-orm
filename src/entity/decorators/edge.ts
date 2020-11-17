@@ -6,12 +6,12 @@ export function Edge(target: any, key: string, descriptor?: TypedPropertyDescrip
   if (descriptor) return descriptor;
   descriptor = Object.getOwnPropertyDescriptor(target, key) || {};
   delete target[key];
-  descriptor.set = function(value: any) {
+  descriptor.set = function (value: any) {
     const self = this;
     if (self instanceof Entity) return self.set(key, value);
     return (self['_' + key] = value);
   };
-  descriptor.get = function() {
+  descriptor.get = function () {
     const self = this;
     if (self instanceof Entity) return self.get(key);
     return self['_' + key];

@@ -1,7 +1,7 @@
 import LINQ from '@berish/linq';
 import { Entity, FileEntity } from './entity';
 import { IQueryData, Query } from './query';
-import { Emitter } from './utils';
+import EventEmitter from '@berish/emitter';
 import { BaseDBAdapter, IBaseDBItem } from './baseDBAdapter';
 import { BaseFileAdapter, IBaseFileItem } from './baseFileAdapter';
 import {
@@ -21,13 +21,13 @@ import {
 export class Manager {
   private _dbAdapter: BaseDBAdapter<any> = null;
   private _fileAdapter: BaseFileAdapter<any> = null;
-  private _emitter: Emitter = null;
+  private _emitter: EventEmitter<any> = null;
 
   /**
    * Emitter для работы с событиями внутри менеджера
    */
   public get emitter() {
-    if (!this._emitter) this._emitter = new Emitter();
+    if (!this._emitter) this._emitter = new EventEmitter();
     return this._emitter;
   }
 
@@ -81,7 +81,7 @@ export class Manager {
    */
   public async initFileAdapter<T extends new () => BaseFileAdapter<any>>(
     fileAdapter: T,
-    params: InstanceType<T>['params']
+    params: InstanceType<T>['params'],
   ) {
     if (!fileAdapter) throw new Error(`fileAdapter is undefined`);
     this._fileAdapter = new fileAdapter();
@@ -92,7 +92,7 @@ export class Manager {
     className: string,
     items: IBaseDBItem[],
     deep?: number,
-    cacheIgnoreIds?: string[]
+    cacheIgnoreIds?: string[],
   ) {
     const cacheEntities: Entity[] = [];
     const cacheFiles: FileEntity[] = [];
@@ -114,19 +114,19 @@ export class Manager {
       if (!initialEntities) initialEntities = deserialized as T[];
 
       if (deep > 0) {
-        const groupBy = LINQ.from(forLoadEntities).groupBy(m => m.className);
+        const groupBy = LINQ.from(forLoadEntities).groupBy((m) => m.className);
 
         await Promise.all(
-          groupBy.map(async m => {
+          groupBy.map(async (m) => {
             const className = m[0];
             const entities = m[1];
-            const queryData = new Query(className).ids(entities.map(m => m.id)).json;
+            const queryData = new Query(className).ids(entities.map((m) => m.id)).json;
             const items = await this.db.find(queryData);
             await fetch(className, items, deep - 1);
-          })
+          }),
         );
 
-        await Promise.all(forLoadFiles.map(m => this.getFile(m)));
+        await Promise.all(forLoadFiles.map((m) => this.getFile(m)));
       }
     };
 
@@ -140,38 +140,38 @@ export class Manager {
    * @param deep
    */
   async getAll<T extends Entity>(items: { id: string; className: string }[], deep?: number) {
-    const groupBy = LINQ.from(LINQ.from(items).groupBy(m => m.className));
+    const groupBy = LINQ.from(LINQ.from(items).groupBy((m) => m.className));
     const data = await Promise.all(
-      groupBy.select(async m => {
-        const items = await new Query<T>(m[0]).ids(m[1].map(m => m.id)).find(this, deep || 0);
+      groupBy.select(async (m) => {
+        const items = await new Query<T>(m[0]).ids(m[1].map((m) => m.id)).find(this, deep || 0);
         return {
           className: m[0],
           items,
         };
-      })
+      }),
     );
     return LINQ.from(data).reduce<{ [className: string]: T[] }>(
       (prev, current) => ({ ...prev, [current.className]: current.items }),
-      {}
+      {},
     );
   }
 
   async save(items: Entity[]) {
     await Promise.all(
       LINQ.from(items)
-        .groupBy(m => m.className)
-        .map(async m => {
+        .groupBy((m) => m.className)
+        .map(async (m) => {
           const serialized: IBaseDBItem[] = serberEntityToDB.serialize(m[1]);
           await this.db.update(m[0], serialized);
-        })
+        }),
     );
   }
 
   async remove(items: Entity[]) {
     await Promise.all(
       LINQ.from(items)
-        .groupBy(m => m.className)
-        .map(m => this._dbAdapter.delete(new Query(m[0]).ids(m[1].map(k => k.id)).json))
+        .groupBy((m) => m.className)
+        .map((m) => this._dbAdapter.delete(new Query(m[0]).ids(m[1].map((k) => k.id)).json)),
     );
   }
 
@@ -185,20 +185,20 @@ export class Manager {
   public async getFile(array: (string | FileEntity)[], fetchData?: boolean): Promise<FileEntity[]>;
   public async getFile(
     arg: string | FileEntity | (string | FileEntity)[],
-    fetchData?: boolean
+    fetchData?: boolean,
   ): Promise<FileEntity | FileEntity[]> {
     const arr = Array.isArray(arg) ? arg : [arg];
-    if (arr.some(m => !(m instanceof FileEntity) && typeof m !== 'string'))
+    if (arr.some((m) => !(m instanceof FileEntity) && typeof m !== 'string'))
       throw new Error('ORM: argument to removeFile is not FileEntity or string');
-    const files = arr.map(m => {
+    const files = arr.map((m) => {
       if (m instanceof FileEntity) return m;
       const fileEntity = new FileEntity();
       fileEntity.setId(m);
       return fileEntity;
     });
     const items = await this.file.get(
-      files.map(m => m.id),
-      fetchData
+      files.map((m) => m.id),
+      fetchData,
     );
     const deserialized: FileEntity[] = serberFileEntityToDB.deserialize(items, { [SYMBOL_SERBER_FILES]: files });
     return Array.isArray(arg) ? deserialized : deserialized[0];
@@ -206,16 +206,16 @@ export class Manager {
 
   public async saveFile(files: FileEntity | FileEntity[]): Promise<void> {
     const arr = Array.isArray(files) ? files : [files];
-    if (arr.some(m => !(m instanceof FileEntity))) throw new Error('ORM: argument to saveFile is not FileEntity');
+    if (arr.some((m) => !(m instanceof FileEntity))) throw new Error('ORM: argument to saveFile is not FileEntity');
     const serialized: IBaseFileItem[] = serberFileEntityToDB.serialize(arr);
     await this.file.create(serialized);
   }
 
   public async deleteFile(files: string | string[] | FileEntity | FileEntity[]): Promise<void> {
     const arr = Array.isArray(files) ? files : [files];
-    if (arr.some(m => !(m instanceof FileEntity) && typeof m !== 'string'))
+    if (arr.some((m) => !(m instanceof FileEntity) && typeof m !== 'string'))
       throw new Error('ORM: argument to removeFile is not FileEntity or string');
-    const ids = arr.map(m => (m instanceof FileEntity ? m.id : m));
+    const ids = arr.map((m) => (m instanceof FileEntity ? m.id : m));
     await this.file.delete(ids);
   }
 
@@ -239,36 +239,40 @@ export class Manager {
 
   private _db_get = (data: IQueryData): Promise<IBaseDBItem> => {
     const query = Query.fromJSON(data);
-    const hash = query.hash;
-    return this.emitter.cacheCall(hash, () => this._dbAdapter.get(data));
+    const methodName = 'get';
+    const eventName = `${query.hash}_${methodName}`;
+    return this.emitter.cacheCall(eventName, () => this._dbAdapter.get(data));
   };
 
   private _db_delete = (data: IQueryData): Promise<void> => {
     const query = Query.fromJSON(data);
-    const hash = query.hash;
-    return this.emitter.cacheCall(hash, () => this._dbAdapter.delete(data));
+    const methodName = 'delete';
+    const eventName = `${query.hash}_${methodName}`;
+    return this.emitter.cacheCall(eventName, () => this._dbAdapter.delete(data));
   };
 
   private _db_find = (data: IQueryData): Promise<IBaseDBItem[]> => {
     const query = Query.fromJSON(data);
-    const hash = query.hash;
-    return this.emitter.cacheCall(hash, () => this._dbAdapter.find(data));
+    const methodName = 'find';
+    const eventName = `${query.hash}_${methodName}`;
+    return this.emitter.cacheCall(eventName, () => this._dbAdapter.find(data));
   };
 
   private _db_subscribe = (
     data: IQueryData,
-    callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem) => any
+    callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem) => any,
   ): (() => any) => {
     const query = Query.fromJSON(data);
-    const hash = query.hash;
-    return this.emitter.cacheSubscribe(
-      hash,
-      eventName =>
-        this._dbAdapter.subscribe(data, (oldValue, newValue) => {
-          this.emitter.emit(eventName, { oldValue, newValue });
-        }),
-      ({ oldValue, newValue }) => callback(oldValue, newValue)
+    const methodName = 'subscribe';
+    const eventName = `${query.hash}_${methodName}`;
+    const eventHash = this.emitter.cacheSubscribe<{ oldValue: IBaseDBItem; newValue: IBaseDBItem }>(
+      eventName,
+      (callback) => {
+        return this._dbAdapter.subscribe(data, (oldValue, newValue) => callback({ oldValue, newValue }));
+      },
+      ({ oldValue, newValue }) => callback(oldValue, newValue),
     );
+    return () => this.emitter.off(eventHash);
   };
 
   private _file_create = (items: IBaseFileItem[]): Promise<void> => {

@@ -19,7 +19,7 @@ import { generateId } from '../../utils';
 // }
 
 export function Register(className: string) {
-  return function(target: typeof Entity) {
+  return function (target: typeof Entity) {
     target.className = className;
     register(className, target);
     return target;

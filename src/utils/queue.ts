@@ -16,7 +16,7 @@ export class QueueAction<Data> {
   execute(data: any) {
     const result = this._cb(data);
     if (result instanceof Promise) {
-      return result.then(m => m);
+      return result.then((m) => m);
     }
     return result;
   }
@@ -32,7 +32,7 @@ export class Queue<Data extends { [key: string]: any }> {
   }
 
   action<TData>(action: QueueAction<TData>) {
-    this._actions = this._actions.concat(action).distinct(m => m.name);
+    this._actions = this._actions.concat(action).distinct((m) => m.name);
     return (this as any) as Queue<Data & TData>;
   }
 
@@ -51,7 +51,7 @@ export class Queue<Data extends { [key: string]: any }> {
         if (onError) onError(err);
       }
     }
-    if (results.some(m => m instanceof Promise))
+    if (results.some((m) => m instanceof Promise))
       return Promise.all(results).finally(() => {
         this._data = {} as any;
       });

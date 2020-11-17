@@ -35,11 +35,11 @@ export interface IEntityToEntityPointerPluginOptions {
 }
 
 export const entityToEntityPointerPlugin: ISerberPlugin<Entity, IEntityPointer, IEntityToEntityPointerPluginOptions> = {
-  isForSerialize: obj => obj instanceof Entity,
-  isForDeserialize: obj => isRaw(obj) && obj.__type__ === RawTypeEnum.entityPointer,
-  isAlreadySerialized: obj => entityToEntityPointerPlugin.isForDeserialize(obj as IEntityPointer),
-  isAlreadyDeserialized: obj => entityToEntityPointerPlugin.isForSerialize(obj as Entity),
-  serialize: obj => {
+  isForSerialize: (obj) => obj instanceof Entity,
+  isForDeserialize: (obj) => isRaw(obj) && obj.__type__ === RawTypeEnum.entityPointer,
+  isAlreadySerialized: (obj) => entityToEntityPointerPlugin.isForDeserialize(obj as IEntityPointer),
+  isAlreadyDeserialized: (obj) => entityToEntityPointerPlugin.isForSerialize(obj as Entity),
+  serialize: (obj) => {
     const out: IEntityPointer = { __type__: RawTypeEnum.entityPointer, link: `${obj.id}:${obj.className}` };
     return out;
   },
@@ -52,7 +52,7 @@ export const entityToEntityPointerPlugin: ISerberPlugin<Entity, IEntityPointer, 
     const forLoadEntities = options[SYMBOL_SERBER_FOR_LOAD_ENTITIES];
 
     if (cacheEntities) {
-      const cache = cacheEntities.filter(m => m.id === id && m.className === className)[0];
+      const cache = cacheEntities.filter((m) => m.id === id && m.className === className)[0];
       if (cache) return cache;
     }
 
