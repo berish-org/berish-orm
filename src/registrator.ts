@@ -1,7 +1,7 @@
 import LINQ from '@berish/linq';
 import type from '@berish/typeof';
 import { Registrator } from '@berish/class';
-import { Entity, IAttributes } from './entity';
+import { Entity, methods } from './entity';
 
 const registrator = new Registrator();
 
@@ -54,9 +54,9 @@ export function getClassNameByClassOrClassName(cls: (new () => Entity) | typeof 
  * Создает instance сущности по названию сущности.
  * Если класс сущности не найден, создает instance на основе базового класса сущности
  */
-export function createEntity(className: string, attributes?: IAttributes): Entity;
-export function createEntity(className: string, attributes?: IAttributes[]): Entity[];
-export function createEntity(className: string, attributes?: IAttributes | IAttributes[]) {
+export function createEntity(className: string, attributes?: methods.IAttributes): Entity;
+export function createEntity(className: string, attributes?: methods.IAttributes[]): Entity[];
+export function createEntity(className: string, attributes?: methods.IAttributes | methods.IAttributes[]) {
   const cls = getClassByClassName(className);
   const arrayAttributes = Array.isArray(attributes) ? attributes : [attributes];
   const entities = LINQ.from(arrayAttributes).select((m) => {

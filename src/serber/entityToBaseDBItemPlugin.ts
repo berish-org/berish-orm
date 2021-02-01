@@ -12,6 +12,7 @@ import {
   SYMBOL_SERBER_CACHE_FILE_ENTITIES,
   SYMBOL_SERBER_FOR_LOAD_FILE_ENTITIES,
 } from './fileEntityToFileEntityPointerPlugin';
+import { setIsFetched } from '../entity/methods';
 
 /**
  * Параметр, который указывает className. Только при десериализации (любой)
@@ -37,11 +38,11 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
   isAlreadySerialized: (obj) => obj && typeof obj === 'object' && 'id' in obj && !(obj instanceof Entity),
   isAlreadyDeserialized: (obj) => obj instanceof Entity,
   serialize: (obj, options) => {
-    const { id, ...attributes } = obj.attributes;
+    const { id, createdAt, updatedAt, ...attributes } = obj.attributes;
     /**
      * TODO: Здесь не хватает дополнительной обработки createdAt, updatedAt, deletedAt
      */
-    const out: IBaseDBItem = { id };
+    const out: IBaseDBItem = { id, createdAt: createdAt && +createdAt, updatedAt: updatedAt && +updatedAt };
     const entries = Object.entries(attributes);
     for (const [key, value] of entries) {
       const serialized = serberEntitiesToPointer.serialize(value, {
@@ -64,7 +65,7 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
     /**
      * TODO: обработка для createdAt, updatedAt, deletedAt
      */
-    const { id, ...attributes } = obj;
+    const { id, createdAt, updatedAt, ...attributes } = obj;
     const entries = Object.entries(attributes);
 
     const cachedEntity = cacheEntities?.filter((m) => m.id === id && m.className === className)[0];
@@ -73,7 +74,13 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
       if (cachedEntity.isFetched) return cachedEntity;
     }
 
-    const entity = cachedEntity || createEntity(className, { id });
+    const entity =
+      cachedEntity ||
+      createEntity(className, {
+        id,
+        createdAt: createdAt && new Date(createdAt),
+        updatedAt: updatedAt && new Date(updatedAt),
+      });
 
     for (const [key, value] of entries) {
       const deserialized = serberEntitiesToPointer.deserialize(value, {
@@ -90,7 +97,7 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
 
       entity.set(key, deserialized);
     }
-    Entity._setIsFetched(entity, true);
+    setIsFetched(entity, true);
     if (!cachedEntity && !cacheEntitiesIgnoreIds?.includes(entity.id)) cacheEntities.push(entity);
 
     return entity;

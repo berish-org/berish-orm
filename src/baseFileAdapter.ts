@@ -1,5 +1,6 @@
 export interface IBaseFileItem {
   id: string;
+  createdAt: number;
   data: Buffer;
   name: string;
 }

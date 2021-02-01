@@ -23,16 +23,18 @@ export const fileEntityToBaseFileItemPlugin: ISerberPlugin<
     !(obj instanceof FileEntity) && fileEntityToBaseFileItemPlugin.isForDeserialize(obj as IBaseFileItem),
   isAlreadyDeserialized: (obj) => fileEntityToBaseFileItemPlugin.isForSerialize(obj as FileEntity),
   serialize: (obj) => {
-    const { id, name, cacheData } = obj;
-    const baseFile: IBaseFileItem = { id, name, data: cacheData };
+    const { id, name, createdAt, cacheData } = obj;
+    const baseFile: IBaseFileItem = { id, name, data: cacheData, createdAt: createdAt && +createdAt };
     return baseFile;
   },
   deserialize: (obj, options) => {
-    const { id, name, data } = obj;
+    const { id, name, data, createdAt } = obj;
     const fileEntity = options[SYMBOL_SERBER_FILES]
       ? options[SYMBOL_SERBER_FILES].filter((m) => m.id === id)[0]
       : new FileEntity();
-    fileEntity.setId(id);
+
+    fileEntity.attributes.id = id;
+    fileEntity.attributes.createdAt = createdAt && new Date(createdAt);
     fileEntity.setName(name);
     fileEntity.setData(data);
     return fileEntity;

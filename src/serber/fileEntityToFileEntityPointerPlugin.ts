@@ -49,7 +49,7 @@ export const fileEntityToFileEntityPointerPlugin: ISerberPlugin<
     }
 
     const fileEntity = new FileEntity();
-    fileEntity.setId(link);
+    fileEntity.attributes.id = link;
 
     if (cacheFiles) cacheFiles.push(fileEntity);
     if (forLoadFiles) forLoadFiles.push(fileEntity);

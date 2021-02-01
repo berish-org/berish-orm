@@ -1,130 +1,97 @@
-import { SYMBOL_ATTRIBUTES, SYMBOL_SYSTEM_ATTRIBUTES } from '../const';
 import * as Decorators from './decorators';
-import { Edge } from '../edge';
-import { Manager } from '../manager';
-import { Plain } from '../plain';
 import { generateId } from '../utils/generateId';
-import { serberFullRaw } from '../serber/instances';
-import { Query } from '../query';
-
-export interface IAttributes {
-  id: string;
-  [key: string]: any;
-}
-
-export interface ISystemAttributes {
-  [key: string]: any;
-}
+import * as methods from './methods';
 
 export class Entity {
   public static Register = Decorators.Register;
   public static Field = Decorators.Field;
   public static Edge = Decorators.Edge;
+
   public static className: string = null;
   public static fields: string[] = null;
 
-  public static _setIsFetched(entity: Entity, isFetched: boolean) {
-    if (entity) entity.setSystem('isFetched', !!isFetched);
+  public static fromJSON<TEntity extends Entity>(this: TEntity, json: { [key: string]: any }) {
+    return methods.fromJSON<TEntity>(json);
   }
 
-  public static fromJSON(json: { [key: string]: any }) {
-    return serberFullRaw.deserialize(json);
+  public constructor() {
+    this.attributes.id = generateId();
   }
 
-  constructor() {
-    this.set('id', generateId());
+  public get attributes() {
+    return methods.getAttributes(this);
   }
 
-  get attributes(): IAttributes {
-    this[SYMBOL_ATTRIBUTES] = this[SYMBOL_ATTRIBUTES] || {};
-    return this[SYMBOL_ATTRIBUTES];
+  public get systemAttributes() {
+    return methods.getSystemAttributes(this);
   }
 
-  get(key: string) {
+  public get(key: string) {
     return this.attributes[key];
   }
 
-  set(key: string, value: any) {
+  public set(key: string, value: any) {
     if (typeof value === 'undefined') return this.unset(key);
     this.attributes[key] = value;
   }
 
-  unset(key: string) {
-    this.attributes[key] = undefined;
-    // delete this.attributes[key];
-    // if (!this.getSystem('unset')) this.setSystem('unset', []);
-    // const arr: string[] = this.getSystem('unset');
-    // arr.push(key);
+  public unset(key: string) {
+    this.attributes[key] = null;
   }
 
-  private get systemAttributes(): ISystemAttributes {
-    this[SYMBOL_SYSTEM_ATTRIBUTES] = this[SYMBOL_SYSTEM_ATTRIBUTES] || {};
-    return this[SYMBOL_SYSTEM_ATTRIBUTES];
-  }
-
-  getSystem(key: string) {
+  public getSystem(key: string) {
     return this.systemAttributes[key];
   }
 
-  setSystem(key: string, value: any) {
+  public setSystem(key: string, value: any) {
     this.systemAttributes[key] = value;
   }
 
-  public get className(): string {
-    return (this.constructor && (this.constructor['className'] as string)) || this.get('className');
+  public get className() {
+    return methods.getClassName(this);
   }
 
   public get id() {
-    return this.get('id') as string;
+    return methods.getId(this);
   }
 
   public get isFetched() {
-    return !!this.getSystem('isFetched');
+    return methods.getIsFetched(this);
   }
 
-  getEdge<Dst extends Entity = Entity>(edgeName: string, dstClassName: string | (new () => Dst)) {
-    const systemName = `edge_src_${edgeName}`;
-    if (!this.getSystem(systemName))
-      this.setSystem(
-        systemName,
-        Edge.create(this.className, edgeName, dstClassName, () => this.id),
-      );
-    return this.getSystem(systemName) as Edge<this, Dst>;
+  public get createdAt() {
+    return methods.getCreatedAt(this);
   }
 
-  getEdgeDst<Src extends Entity = Entity>(edgeName: string, srcClassName: string | (new () => Src)) {
-    const systemName = `edge_dst_${edgeName}`;
-    if (!this.getSystem(systemName))
-      this.setSystem(
-        systemName,
-        Edge.createFromDst(srcClassName, edgeName, this.className, () => this.id),
-      );
-    return this.getSystem(systemName) as Edge<this, Src>;
+  public get updatedAt() {
+    return methods.getUpdatedAt(this);
   }
 
-  getEdgeDstSingle<Src extends Entity = Entity>(edgeName: string, srcClassName: string | (new () => Src)) {
-    const edge = this.getEdgeDst(edgeName, srcClassName);
-    return async (manager: Manager, deep?: number) => {
-      const data = await edge.query.find(manager, deep);
-      return data && data[0];
-    };
+  public getEdge<Dst extends Entity = Entity>(edgeName: string, dstClassName: string | (new () => Dst)) {
+    return methods.getEdge<Dst>(this, edgeName, dstClassName);
   }
 
-  getPlain(plainName: string) {
-    const systemName = `plain_src_${plainName}`;
-    if (!this.getSystem(systemName))
-      this.setSystem(
-        systemName,
-        Plain.create(this.className, plainName, () => this.id),
-      );
-    return this.getSystem(systemName) as Plain<this>;
+  public getEdgeDst<Src extends Entity = Entity>(edgeName: string, srcClassName: string | (new () => Src)) {
+    return methods.getEdgeDst<Src>(this, edgeName, srcClassName);
   }
 
-  toJSON() {
-    return serberFullRaw.serialize(this);
+  public getEdgeSingle<Dst extends Entity = Entity>(edgeName: string, srcClassName: string | (new () => Dst)) {
+    return methods.getEdgeSingle<Dst>(this, edgeName, srcClassName);
   }
 
-  toQuery() {
-    return new Query(this.className).ids([this.id]);
+  public getEdgeDstSingle<Src extends Entity = Entity>(edgeName: string, srcClassName: string | (new () => Src)) {
+    return methods.getEdgeDstSingle<Src>(this, edgeName, srcClassName);
+  }
+
+  public getPlain(plainName: string) {
+    return methods.getPlain(this, plainName);
+  }
+
+  public toJSON() {
+    return methods.toJSON(this);
+  }
+
+  public toQuery() {
+    return methods.toQuery(this);
   }
 }

@@ -8,7 +8,7 @@ import { entityToBaseDBItemPlugin } from './entityToBaseDBItemPlugin';
 import { undefinedDBPlugin } from './undefinedDBPlugin';
 
 export const serberFullRaw = new Serber()
-  .addPlugin(plugins.undefinedPlugin)
+  .addPlugin(undefinedDBPlugin)
   .addPlugin(plugins.nullPlugin)
   .addPlugin(plugins.boolPlugin)
   .addPlugin(plugins.numberPlugin)
@@ -27,7 +27,7 @@ export const serberFileEntityToDB = new Serber()
 export const serberEntityToDB = new Serber().addPlugin(plugins.arrayPlugin).addPlugin(entityToBaseDBItemPlugin);
 
 export const serberEntitiesToPointer = new Serber()
-  .addPlugin(plugins.undefinedPlugin)
+  .addPlugin(undefinedDBPlugin)
   .addPlugin(plugins.nullPlugin)
   .addPlugin(plugins.boolPlugin)
   .addPlugin(plugins.numberPlugin)
@@ -38,8 +38,3 @@ export const serberEntitiesToPointer = new Serber()
   .addPlugin(entityToEntityPointerPlugin)
   .addPlugin(fileEntityToFileEntityPointerPlugin)
   .addPlugin(plugins.loopObjectPlugin);
-
-export const serberUndefinedLabel = new Serber()
-  .addPlugin(plugins.arrayPlugin)
-  .addPlugin(undefinedDBPlugin)
-  .addPlugin(plugins.objectPlugin);

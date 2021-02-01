@@ -56,7 +56,7 @@ export const entityToEntityPointerPlugin: ISerberPlugin<Entity, IEntityPointer, 
       if (cache) return cache;
     }
 
-    const entity = createEntity(className, { id });
+    const entity = createEntity(className, { id, createdAt: undefined, updatedAt: undefined });
 
     if (cacheEntities && !cacheEntitiesIgnoreIds?.includes(entity.id)) cacheEntities.push(entity);
     if (forLoadEntities) forLoadEntities.push(entity);

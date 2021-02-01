@@ -7,7 +7,7 @@ import { Query } from '../query';
 
 export interface IEdgeQueueActionData {
   manager: Manager;
-  edge: Edge<any, any>;
+  edge: Edge<any>;
   srcAdded: string[];
   dstAdded: string[];
   srcRemoved: string[];
@@ -20,14 +20,16 @@ export interface IEdgeRaw {
   dst: string;
 }
 
-export class Edge<Current extends Entity, Remote extends Entity> {
+export type EdgeSingle<Remote extends Entity> = (manager: Manager, deep?: number) => Promise<Remote>;
+
+export class Edge<Remote extends Entity> {
   static create<Src extends Entity, Dst extends Entity>(
     srcCtor: string | (new () => Src),
     edgeName: string,
     dstCtor: string | (new () => Dst),
     entityId: () => string,
   ) {
-    const edge = new Edge<Src, Dst>(srcCtor, edgeName, dstCtor, 'src', entityId);
+    const edge = new Edge<Dst>(srcCtor, edgeName, dstCtor, 'src', entityId);
     return edge;
   }
 
@@ -37,7 +39,7 @@ export class Edge<Current extends Entity, Remote extends Entity> {
     dstCtor: string | (new () => Dst),
     entityId: () => string,
   ) {
-    const edge = new Edge<Dst, Src>(srcCtor, edgeName, dstCtor, 'dst', entityId);
+    const edge = new Edge<Src>(srcCtor, edgeName, dstCtor, 'dst', entityId);
     return edge;
   }
 

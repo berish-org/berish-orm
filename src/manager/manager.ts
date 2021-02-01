@@ -1,22 +1,10 @@
 import LINQ from '@berish/linq';
-import { Entity, FileEntity } from './entity';
-import { IQueryData, Query } from './query';
 import EventEmitter from '@berish/emitter';
-import { BaseDBAdapter, IBaseDBItem } from './baseDBAdapter';
-import { BaseFileAdapter, IBaseFileItem } from './baseFileAdapter';
-import {
-  SYMBOL_SERBER_ENTITY_CLASSNAME,
-  SYMBOL_SERBER_FILES,
-  SYMBOL_SERBER_CACHE_FILE_ENTITIES,
-  SYMBOL_SERBER_FOR_LOAD_FILE_ENTITIES,
-  SYMBOL_SERBER_CACHE_ENTITIES,
-  SYMBOL_SERBER_FOR_LOAD_ENTITIES,
-  serberFileEntityToDB,
-  serberEntityToDB,
-  serberUndefinedLabel,
-  SYMBOL_SERBER_UNDEFINED_DB_LITERAL,
-  SYMBOL_SERBER_CACHE_ENTITIES_IGNORE_IDS,
-} from './serber';
+import { Entity, FileEntity } from '../entity';
+import { QueryData, QueryDataSchema, Query } from '../query';
+import { BaseDBAdapter, IBaseDBItem } from '../baseDBAdapter';
+import { BaseFileAdapter, IBaseFileItem } from '../baseFileAdapter';
+import * as methods from './methods';
 
 export class Manager {
   private _dbAdapter: BaseDBAdapter<any> = null;
@@ -34,7 +22,7 @@ export class Manager {
   /**
    * Объект для работы с dbAdapter.
    * Все методы имеют непрямой доступ к адаптеру, используют проверку разрешений и оптимизацию перед реальными запросами.
-   * Данные методы не стоит использовать для работы с базой данных, так как все аргементы и ответы реализованы с использованием примитивов.
+   * Данные методы не стоит использовать для работы с базой данных, так как все аргументы и ответы реализованы с использованием примитивов.
    * Необходимо использовать в качестве вспомогательных методов через функции обработчики (с использованием типов ORM)
    */
   public get db() {
@@ -43,6 +31,7 @@ export class Manager {
       update: this._db_update,
       index: this._db_index,
       get: this._db_get,
+      count: this._db_count,
       delete: this._db_delete,
       find: this._db_find,
       subscribe: this._db_subscribe,
@@ -52,7 +41,7 @@ export class Manager {
   /**
    * Объект для работы с fileAdapter.
    * Все методы имеют непрямой доступ к адаптеру, используют проверку разрешений и оптимизацию перед реальными запросами.
-   * Данные методы не стоит использовать для работы с базой данных, так как все аргементы и ответы реализованы с использованием примитивов.
+   * Данные методы не стоит использовать для работы с базой данных, так как все аргументы и ответы реализованы с использованием примитивов.
    * Необходимо использовать в качестве вспомогательных методов через функции обработчики (с использованием типов ORM)
    */
   public get file() {
@@ -88,52 +77,6 @@ export class Manager {
     await this._fileAdapter.initialize(params);
   }
 
-  async convertDBItemsToEntities<T extends Entity>(
-    className: string,
-    items: IBaseDBItem[],
-    deep?: number,
-    cacheIgnoreIds?: string[],
-  ) {
-    const cacheEntities: Entity[] = [];
-    const cacheFiles: FileEntity[] = [];
-    let initialEntities: T[] = null;
-
-    const fetch = async (className: string, items: IBaseDBItem[], deep: number) => {
-      const forLoadEntities: Entity[] = [];
-      const forLoadFiles: FileEntity[] = [];
-
-      const deserialized: Entity[] = serberEntityToDB.deserialize(items, {
-        [SYMBOL_SERBER_ENTITY_CLASSNAME]: className,
-        [SYMBOL_SERBER_CACHE_ENTITIES]: cacheEntities,
-        [SYMBOL_SERBER_CACHE_ENTITIES_IGNORE_IDS]: cacheIgnoreIds,
-        [SYMBOL_SERBER_FOR_LOAD_ENTITIES]: forLoadEntities,
-        [SYMBOL_SERBER_CACHE_FILE_ENTITIES]: cacheFiles,
-        [SYMBOL_SERBER_FOR_LOAD_FILE_ENTITIES]: forLoadFiles,
-      });
-
-      if (!initialEntities) initialEntities = deserialized as T[];
-
-      if (deep > 0) {
-        const groupBy = LINQ.from(forLoadEntities).groupBy((m) => m.className);
-
-        await Promise.all(
-          groupBy.map(async (m) => {
-            const className = m[0];
-            const entities = m[1];
-            const queryData = new Query(className).ids(entities.map((m) => m.id)).json;
-            const items = await this.db.find(queryData);
-            await fetch(className, items, deep - 1);
-          }),
-        );
-
-        await Promise.all(forLoadFiles.map((m) => this.getFile(m)));
-      }
-    };
-
-    await fetch(className, items, typeof deep === 'number' ? deep : 1);
-    return initialEntities;
-  }
-
   /**
    *
    * @param items
@@ -157,22 +100,11 @@ export class Manager {
   }
 
   async save(items: Entity[]) {
-    await Promise.all(
-      LINQ.from(items)
-        .groupBy((m) => m.className)
-        .map(async (m) => {
-          const serialized: IBaseDBItem[] = serberEntityToDB.serialize(m[1]);
-          await this.db.update(m[0], serialized);
-        }),
-    );
+    await methods.saveEntity(this, items);
   }
 
   async remove(items: Entity[]) {
-    await Promise.all(
-      LINQ.from(items)
-        .groupBy((m) => m.className)
-        .map((m) => this._dbAdapter.delete(new Query(m[0]).ids(m[1].map((k) => k.id)).json)),
-    );
+    await methods.removeEntity(this, items);
   }
 
   /**
@@ -188,70 +120,62 @@ export class Manager {
     fetchData?: boolean,
   ): Promise<FileEntity | FileEntity[]> {
     const arr = Array.isArray(arg) ? arg : [arg];
-    if (arr.some((m) => !(m instanceof FileEntity) && typeof m !== 'string'))
-      throw new Error('ORM: argument to removeFile is not FileEntity or string');
-    const files = arr.map((m) => {
-      if (m instanceof FileEntity) return m;
-      const fileEntity = new FileEntity();
-      fileEntity.setId(m);
-      return fileEntity;
-    });
-    const items = await this.file.get(
-      files.map((m) => m.id),
-      fetchData,
-    );
-    const deserialized: FileEntity[] = serberFileEntityToDB.deserialize(items, { [SYMBOL_SERBER_FILES]: files });
+    const deserialized = await methods.getFile(this, arr);
     return Array.isArray(arg) ? deserialized : deserialized[0];
   }
 
+  /**
+   * Метод для сохранения файлов
+   * @param files FileEntity или массив FileEntity
+   */
   public async saveFile(files: FileEntity | FileEntity[]): Promise<void> {
-    const arr = Array.isArray(files) ? files : [files];
-    if (arr.some((m) => !(m instanceof FileEntity))) throw new Error('ORM: argument to saveFile is not FileEntity');
-    const serialized: IBaseFileItem[] = serberFileEntityToDB.serialize(arr);
-    await this.file.create(serialized);
+    await methods.saveFile(this, files);
   }
 
-  public async deleteFile(files: string | string[] | FileEntity | FileEntity[]): Promise<void> {
-    const arr = Array.isArray(files) ? files : [files];
-    if (arr.some((m) => !(m instanceof FileEntity) && typeof m !== 'string'))
-      throw new Error('ORM: argument to removeFile is not FileEntity or string');
-    const ids = arr.map((m) => (m instanceof FileEntity ? m.id : m));
-    await this.file.delete(ids);
+  /**
+   * Метод для удаления файлов
+   * @param files FileEntity или массив FileEntity
+   */
+  public async removeFile(files: string | string[] | FileEntity | FileEntity[]): Promise<void> {
+    await methods.removeFile(this, files);
   }
+
+  // ВНУТРЕННИЕ МЕТОДЫ
 
   private _db_create = (table: string, items: IBaseDBItem[]): Promise<void> => {
     return this._dbAdapter.create(table, items);
   };
 
   private _db_update = async (table: string, items: IBaseDBItem[]): Promise<void> => {
-    // const deserialized = await serberInstance.serializeAsync(items, {
-    //   [SYMBOL_SERBER_UNDEFINED_DB_LITERAL]: this._dbAdapter.emptyFieldLiteral,
-    // });
-    const deserialized: IBaseDBItem[] = serberUndefinedLabel.serialize(items, {
-      [SYMBOL_SERBER_UNDEFINED_DB_LITERAL]: this._dbAdapter.emptyFieldLiteral,
-    });
-    return this._dbAdapter.update(table, deserialized);
+    return this._dbAdapter.update(table, items);
   };
 
   private _db_index = (table: string, indexName: string, keys?: string[]): void => {
     return this._dbAdapter.index(table, indexName, keys);
   };
 
-  private _db_get = (data: IQueryData): Promise<IBaseDBItem> => {
+  private _db_get = (data: QueryData<QueryDataSchema>): Promise<IBaseDBItem> => {
     const query = Query.fromJSON(data);
     const methodName = 'get';
     const eventName = `${query.hash}_${methodName}`;
     return this.emitter.cacheCall(eventName, () => this._dbAdapter.get(data));
   };
 
-  private _db_delete = (data: IQueryData): Promise<void> => {
+  private _db_count = (data: QueryData<QueryDataSchema>): Promise<number> => {
+    const query = Query.fromJSON(data);
+    const methodName = 'count';
+    const eventName = `${query.hash}_${methodName}`;
+    return this.emitter.cacheCall(eventName, () => this._dbAdapter.count(data));
+  };
+
+  private _db_delete = (data: QueryData<QueryDataSchema>): Promise<void> => {
     const query = Query.fromJSON(data);
     const methodName = 'delete';
     const eventName = `${query.hash}_${methodName}`;
     return this.emitter.cacheCall(eventName, () => this._dbAdapter.delete(data));
   };
 
-  private _db_find = (data: IQueryData): Promise<IBaseDBItem[]> => {
+  private _db_find = (data: QueryData<QueryDataSchema>): Promise<IBaseDBItem[]> => {
     const query = Query.fromJSON(data);
     const methodName = 'find';
     const eventName = `${query.hash}_${methodName}`;
@@ -259,16 +183,27 @@ export class Manager {
   };
 
   private _db_subscribe = (
-    data: IQueryData,
+    data: QueryData<QueryDataSchema>,
     callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem) => any,
+    onError?: (reason: any) => any,
   ): (() => any) => {
-    const query = Query.fromJSON(data);
+    const hash = Query.getHash(data);
     const methodName = 'subscribe';
-    const eventName = `${query.hash}_${methodName}`;
+    const eventName = `${hash}_${methodName}`;
+
     const eventHash = this.emitter.cacheSubscribe<{ oldValue: IBaseDBItem; newValue: IBaseDBItem }>(
       eventName,
       (callback) => {
-        return this._dbAdapter.subscribe(data, (oldValue, newValue) => callback({ oldValue, newValue }));
+        const onDisconnect = this._dbAdapter.subscribe(
+          data,
+          (oldValue, newValue) => callback({ oldValue, newValue }),
+          (reason) => onError && onError(reason),
+        );
+
+        return async () => {
+          const disconnect = await onDisconnect;
+          disconnect();
+        };
       },
       ({ oldValue, newValue }) => callback(oldValue, newValue),
     );

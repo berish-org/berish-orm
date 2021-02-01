@@ -2,25 +2,46 @@ import { SYMBOL_ATTRIBUTES } from '../const';
 import { generateId } from '../utils';
 import { Manager } from '../manager';
 import { serberFullRaw } from '../serber/instances';
+import * as methods from './methods';
+import { ENGINE_METHOD_DIGESTS } from 'constants';
 
 export class FileEntity {
-  private [SYMBOL_ATTRIBUTES]: { [key: string]: any } = null;
   private _cacheData: Buffer = null;
 
   public static fromJSON(json: { [key: string]: any }) {
-    return serberFullRaw.deserialize(json);
+    return methods.fromJSON<FileEntity>(json);
   }
 
   constructor() {
-    this.setId(generateId());
+    this.attributes.id = generateId();
+  }
+
+  public get attributes() {
+    return methods.getAttributes(this);
+  }
+
+  public get(key: string) {
+    return this.attributes[key];
+  }
+
+  public set(key: string, value: any) {
+    this.attributes[key] = value;
   }
 
   public get id() {
-    return this.get('id');
+    return methods.getId(this);
   }
 
   public get name() {
-    return this.get('name');
+    return methods.getFileName(this);
+  }
+
+  public get createdAt() {
+    return methods.getCreatedAt(this);
+  }
+
+  public setName(name: string) {
+    methods.setFileName(this, name);
   }
 
   public get cacheData(): Buffer {
@@ -37,28 +58,7 @@ export class FileEntity {
     this._cacheData = data;
   }
 
-  public setName(name: string) {
-    this.set('name', name);
-  }
-
-  public setId(id: string) {
-    this.set('id', id);
-  }
-
-  get attributes() {
-    if (!this[SYMBOL_ATTRIBUTES]) this[SYMBOL_ATTRIBUTES] = {};
-    return this[SYMBOL_ATTRIBUTES];
-  }
-
-  private get(key: string) {
-    return this.attributes[key];
-  }
-
-  private set(key: string, value: any) {
-    this.attributes[key] = value;
-  }
-
-  toJSON() {
-    return serberFullRaw.serialize(this);
+  public toJSON() {
+    return methods.toJSON(this);
   }
 }

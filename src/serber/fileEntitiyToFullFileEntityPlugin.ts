@@ -5,6 +5,7 @@ import { isRaw, RawTypeEnum, IRaw } from './abstract';
 export interface IFullFileEntity extends IRaw<RawTypeEnum.fullFileEntity> {
   id: string;
   name: string;
+  createdAt: number;
 }
 
 export const fileEntityToFullFileEntityPlugin: ISerberPlugin<FileEntity, IFullFileEntity, {}> = {
@@ -13,12 +14,20 @@ export const fileEntityToFullFileEntityPlugin: ISerberPlugin<FileEntity, IFullFi
   isAlreadySerialized: (obj) => fileEntityToFullFileEntityPlugin.isForDeserialize(obj as IFullFileEntity),
   isAlreadyDeserialized: (obj) => fileEntityToFullFileEntityPlugin.isForSerialize(obj as FileEntity),
   serialize: (obj) => {
-    const out: IFullFileEntity = { id: obj.id, name: obj.name, __type__: RawTypeEnum.fullFileEntity };
+    const { id, name, createdAt } = obj;
+    const out: IFullFileEntity = {
+      id: obj.id,
+      name: obj.name,
+      __type__: RawTypeEnum.fullFileEntity,
+      createdAt: createdAt && +createdAt,
+    };
     return out;
   },
   deserialize: (obj) => {
     const out = new FileEntity();
-    out.setId(obj.id);
+    out.attributes.id = obj.name;
+    out.attributes.createdAt = obj.createdAt && new Date(obj.createdAt);
+
     out.setName(obj.name);
     return out;
   },

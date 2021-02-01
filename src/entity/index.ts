@@ -1,5 +1,4 @@
-import * as Decorators from './decorators';
-
 export * from './entity';
 export * from './fileEntity';
-export { Decorators };
+export * as methods from './methods';
+export * as decorators from './decorators';
