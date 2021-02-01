@@ -1,6 +1,8 @@
 import { ISerberPlugin } from '@berish/serber';
-import { FileEntity } from '../entity';
-import { isRaw, RawTypeEnum, IRaw } from './abstract';
+
+import { FileEntity } from '../../entity';
+import { getDate, getTimestamp } from '../../utils';
+import { isRaw, RawTypeEnum, IRaw } from '../abstract';
 
 export interface IFullFileEntity extends IRaw<RawTypeEnum.fullFileEntity> {
   id: string;
@@ -19,14 +21,14 @@ export const fileEntityToFullFileEntityPlugin: ISerberPlugin<FileEntity, IFullFi
       id: obj.id,
       name: obj.name,
       __type__: RawTypeEnum.fullFileEntity,
-      createdAt: createdAt && +createdAt,
+      createdAt: getTimestamp(createdAt),
     };
     return out;
   },
   deserialize: (obj) => {
     const out = new FileEntity();
     out.attributes.id = obj.name;
-    out.attributes.createdAt = obj.createdAt && new Date(obj.createdAt);
+    out.attributes.createdAt = getDate(obj.createdAt);
 
     out.setName(obj.name);
     return out;

@@ -1,6 +1,6 @@
 import { SYMBOL_ATTRIBUTES } from '../../const';
-import { Entity } from '../entity';
-import { FileEntity } from '../fileEntity';
+import type { Entity } from '../entity';
+import type { FileEntity } from '../fileEntity';
 
 export interface IAttributes {
   id: string;

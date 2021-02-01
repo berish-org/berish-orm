@@ -1,5 +1,5 @@
 import { Edge } from '../../edge';
-import { Entity } from '../entity';
+import type { Entity } from '../entity';
 
 export function getEdge<Dst extends Entity = Entity>(
   entity: Entity,

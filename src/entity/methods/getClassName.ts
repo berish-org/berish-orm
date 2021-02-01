@@ -1,5 +1,5 @@
 import { getClassOfInstance } from '@berish/class';
-import { Entity } from '../entity';
+import type { Entity } from '../entity';
 
 export function getClassName(entity: Entity): string {
   if (!entity) return null;

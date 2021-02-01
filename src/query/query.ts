@@ -18,6 +18,7 @@ export interface QueryDataSchema {
   lessOrEqual?: { [key: string]: any };
   greater?: { [key: string]: any };
   greaterOrEqual?: { [key: string]: any };
+  pluck?: string[];
 }
 
 export type QueryData<TSchema extends { [key: string]: any } = QueryDataSchema> = {
@@ -155,6 +156,10 @@ export class Query<T extends Entity> {
 
   public greaterOrEqual(key: string, value: any): this {
     return this.append('greaterOrEqual', { [key]: value });
+  }
+
+  public pluck(...keys: string[]) {
+    return this.append('pluck', keys);
   }
 
   // METHODS

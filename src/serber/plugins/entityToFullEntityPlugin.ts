@@ -1,9 +1,11 @@
-import { ISerberPlugin, SERBER_KEY_SYMBOL, SERBER_PARENT_OBJECT_SYMBOL, SERBER_PATH_SYMBOL } from '@berish/serber';
-import { Entity } from '../entity';
-import { IRaw, RawTypeEnum, isRaw } from './abstract';
-import { serberFullRaw } from './instances';
-import { createEntity } from '../registrator';
-import { setIsFetched } from '../entity/methods';
+import { ISerberPlugin } from '@berish/serber';
+
+import { Entity } from '../../entity';
+import { IRaw, RawTypeEnum, isRaw } from '../abstract';
+import { createEntity } from '../../registrator';
+import { setIsFetched } from '../../entity/methods';
+import { serberFullRaw } from '../instances/serberFullRaw';
+import { getDate, getTimestamp } from '../../utils';
 
 export interface IFullEntity extends IRaw<RawTypeEnum.fullEntity> {
   id: string;
@@ -26,8 +28,8 @@ export const entityToFullEntityPlugin: ISerberPlugin<Entity, IFullEntity, {}> = 
       __type__: RawTypeEnum.fullEntity,
       id,
       className,
-      createdAt: createdAt && +createdAt,
-      updatedAt: updatedAt && +updatedAt,
+      createdAt: getTimestamp(createdAt),
+      updatedAt: getTimestamp(updatedAt),
       ...serialized,
     };
     return out;
@@ -37,8 +39,8 @@ export const entityToFullEntityPlugin: ISerberPlugin<Entity, IFullEntity, {}> = 
     const deserialized = serberFullRaw.deserialize(attributes);
     const entity = createEntity(className, {
       id,
-      createdAt: createdAt && new Date(createdAt),
-      updatedAt: updatedAt && new Date(updatedAt),
+      createdAt: getDate(createdAt),
+      updatedAt: getDate(updatedAt),
       ...deserialized,
     });
     setIsFetched(entity, true);

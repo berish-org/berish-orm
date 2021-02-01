@@ -1,9 +1,10 @@
 import { Entity } from '../entity';
 import { getClassNameByClass } from '../registrator';
 import { Queue } from '../utils';
-import * as QueueActions from './queueActions';
 import { Manager } from '../manager';
 import { Query } from '../query';
+
+import * as QueueActions from './queueActions';
 
 export interface IEdgeQueueActionData {
   manager: Manager;

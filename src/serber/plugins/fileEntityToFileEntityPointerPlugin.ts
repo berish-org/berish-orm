@@ -1,7 +1,6 @@
 import { ISerberPlugin } from '@berish/serber';
-import { FileEntity } from '../entity';
-import { isRaw, IRaw, RawTypeEnum, SYMBOL_SERBER_MANAGER_INSTANCE } from './abstract';
-import { Manager } from '../manager';
+import { FileEntity } from '../../entity';
+import { isRaw, IRaw, RawTypeEnum } from '../abstract';
 
 /**
  * Параметр, в котором мы указываем пустой массив на входе.

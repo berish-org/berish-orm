@@ -1,6 +1,8 @@
 import { ISerberPlugin } from '@berish/serber';
-import { FileEntity } from '../entity';
-import { IBaseFileItem } from '../baseFileAdapter';
+
+import { FileEntity } from '../../entity';
+import { IBaseFileItem } from '../../baseFileAdapter';
+import { getDate, getTimestamp } from '../../utils';
 
 /**
  * Параметр,в который передают пустые fileEntities.
@@ -24,7 +26,7 @@ export const fileEntityToBaseFileItemPlugin: ISerberPlugin<
   isAlreadyDeserialized: (obj) => fileEntityToBaseFileItemPlugin.isForSerialize(obj as FileEntity),
   serialize: (obj) => {
     const { id, name, createdAt, cacheData } = obj;
-    const baseFile: IBaseFileItem = { id, name, data: cacheData, createdAt: createdAt && +createdAt };
+    const baseFile: IBaseFileItem = { id, name, data: cacheData, createdAt: getTimestamp(createdAt) };
     return baseFile;
   },
   deserialize: (obj, options) => {
@@ -34,7 +36,7 @@ export const fileEntityToBaseFileItemPlugin: ISerberPlugin<
       : new FileEntity();
 
     fileEntity.attributes.id = id;
-    fileEntity.attributes.createdAt = createdAt && new Date(createdAt);
+    fileEntity.attributes.createdAt = getDate(createdAt);
     fileEntity.setName(name);
     fileEntity.setData(data);
     return fileEntity;

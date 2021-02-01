@@ -1,7 +1,8 @@
 import { ISerberPlugin } from '@berish/serber';
-import { Entity } from '../entity';
-import { IRaw, RawTypeEnum, isRaw } from './abstract';
-import { createEntity } from '../registrator';
+
+import { Entity } from '../../entity';
+import { IRaw, RawTypeEnum, isRaw } from '../abstract';
+import { createEntity } from '../../registrator';
 
 /**
  * Параметр, в котором мы указываем пустой массив на входе.
@@ -56,7 +57,7 @@ export const entityToEntityPointerPlugin: ISerberPlugin<Entity, IEntityPointer, 
       if (cache) return cache;
     }
 
-    const entity = createEntity(className, { id, createdAt: undefined, updatedAt: undefined });
+    const entity = createEntity(className, { id, createdAt: null, updatedAt: null });
 
     if (cacheEntities && !cacheEntitiesIgnoreIds?.includes(entity.id)) cacheEntities.push(entity);
     if (forLoadEntities) forLoadEntities.push(entity);

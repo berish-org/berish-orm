@@ -1,6 +1,8 @@
 import { FileEntity } from '../../entity';
-import { serberFileEntityToDB, SYMBOL_SERBER_FILES } from '../../serber';
+import { serberFileEntityToDB, plugins } from '../../serber';
 import { Manager } from '../manager';
+
+const { SYMBOL_SERBER_FILES } = plugins;
 
 export async function getFile(
   manager: Manager,

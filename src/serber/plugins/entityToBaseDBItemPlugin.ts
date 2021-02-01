@@ -1,8 +1,8 @@
 import { ISerberPlugin, SERBER_KEY_SYMBOL, SERBER_PARENT_OBJECT_SYMBOL, SERBER_PATH_SYMBOL } from '@berish/serber';
-import { Entity, FileEntity } from '../entity';
-import { IBaseDBItem } from '../baseDBAdapter';
-import { createEntity } from '../registrator';
-import { serberEntitiesToPointer } from './instances';
+
+import { Entity, FileEntity } from '../../entity';
+import { IBaseDBItem } from '../../baseDBAdapter';
+import { createEntity } from '../../registrator';
 import {
   SYMBOL_SERBER_CACHE_ENTITIES,
   SYMBOL_SERBER_CACHE_ENTITIES_IGNORE_IDS,
@@ -12,7 +12,9 @@ import {
   SYMBOL_SERBER_CACHE_FILE_ENTITIES,
   SYMBOL_SERBER_FOR_LOAD_FILE_ENTITIES,
 } from './fileEntityToFileEntityPointerPlugin';
-import { setIsFetched } from '../entity/methods';
+import { setIsFetched } from '../../entity/methods';
+import { serberEntitiesToPointer } from '../instances/serberEntitiesToPointer';
+import { getDate, getTimestamp } from '../../utils';
 
 /**
  * Параметр, который указывает className. Только при десериализации (любой)
@@ -39,10 +41,8 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
   isAlreadyDeserialized: (obj) => obj instanceof Entity,
   serialize: (obj, options) => {
     const { id, createdAt, updatedAt, ...attributes } = obj.attributes;
-    /**
-     * TODO: Здесь не хватает дополнительной обработки createdAt, updatedAt, deletedAt
-     */
-    const out: IBaseDBItem = { id, createdAt: createdAt && +createdAt, updatedAt: updatedAt && +updatedAt };
+
+    const out: IBaseDBItem = { id, createdAt: getTimestamp(createdAt), updatedAt: getTimestamp(updatedAt) };
     const entries = Object.entries(attributes);
     for (const [key, value] of entries) {
       const serialized = serberEntitiesToPointer.serialize(value, {
@@ -62,9 +62,6 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
     const forLoadEntities = options[SYMBOL_SERBER_FOR_LOAD_ENTITIES];
 
     if (!className) return null;
-    /**
-     * TODO: обработка для createdAt, updatedAt, deletedAt
-     */
     const { id, createdAt, updatedAt, ...attributes } = obj;
     const entries = Object.entries(attributes);
 
@@ -78,8 +75,8 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
       cachedEntity ||
       createEntity(className, {
         id,
-        createdAt: createdAt && new Date(createdAt),
-        updatedAt: updatedAt && new Date(updatedAt),
+        createdAt: getDate(createdAt),
+        updatedAt: getDate(updatedAt),
       });
 
     for (const [key, value] of entries) {

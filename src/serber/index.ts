@@ -1,9 +1,3 @@
 export * from './abstract';
-export * from './entityToBaseDBItemPlugin';
-export * from './entityToEntityPointerPlugin';
-export * from './entityToFullEntityPlugin';
-export * from './fileEntitiyToFullFileEntityPlugin';
-export * from './fileEntityToBaseFileItemPlugin';
-export * from './fileEntityToFileEntityPointerPlugin';
+export * as plugins from './plugins';
 export * from './instances';
-export * from './undefinedDBPlugin';

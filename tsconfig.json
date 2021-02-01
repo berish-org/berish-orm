@@ -12,7 +12,8 @@
     "strictNullChecks": false,
     "noImplicitReturns": true,
     "noImplicitThis": false,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "experimentalDecorators": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"]

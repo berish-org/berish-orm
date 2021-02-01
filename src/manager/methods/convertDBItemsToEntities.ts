@@ -2,16 +2,17 @@ import LINQ from '@berish/linq';
 import { Query } from '../..';
 import { IBaseDBItem } from '../../baseDBAdapter';
 import { Entity, FileEntity } from '../../entity';
-import {
-  serberEntityToDB,
+import { serberEntityToDB, plugins } from '../../serber';
+import { Manager } from '../manager';
+
+const {
   SYMBOL_SERBER_CACHE_ENTITIES,
   SYMBOL_SERBER_CACHE_ENTITIES_IGNORE_IDS,
   SYMBOL_SERBER_CACHE_FILE_ENTITIES,
   SYMBOL_SERBER_ENTITY_CLASSNAME,
   SYMBOL_SERBER_FOR_LOAD_ENTITIES,
   SYMBOL_SERBER_FOR_LOAD_FILE_ENTITIES,
-} from '../../serber';
-import { Manager } from '../manager';
+} = plugins;
 
 export async function convertDBItemsToEntities<T extends Entity = Entity>(
   manager: Manager,
