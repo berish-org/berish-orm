@@ -1,3 +1,4 @@
+import type { Manager } from '../manager';
 import * as Decorators from './decorators';
 import { generateId } from '../utils/generateId';
 import * as methods from './methods';
@@ -93,5 +94,14 @@ export class Entity {
 
   public toQuery() {
     return methods.toQuery(this);
+  }
+
+  public async fetch(manager: Manager, deep?: number) {
+    await methods.fetch(this, manager, deep);
+    return this;
+  }
+
+  public subscribe(manager: Manager, callback: (oldValue: this, newValue: this) => any, deep?: number) {
+    return methods.subscribe(this, manager, callback, deep);
   }
 }

@@ -1,3 +1,4 @@
+export * from './fetch';
 export * from './fromJSON';
 export * from './getAttributes';
 export * from './getClassName';
@@ -14,5 +15,6 @@ export * from './getSystemAttributes';
 export * from './getUpdatedAt';
 export * from './setFileName';
 export * from './setIsFetched';
+export * from './subscribe';
 export * from './toJSON';
 export * from './toQuery';
