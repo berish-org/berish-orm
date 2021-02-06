@@ -1,5 +1,5 @@
 import { FileEntity } from '../../entity';
-import { serberFileEntityToDB, plugins } from '../../serber';
+import { serberInstances, plugins } from '../../serber';
 import { Manager } from '../manager';
 
 const { SYMBOL_SERBER_FILES } = plugins;
@@ -23,6 +23,8 @@ export async function getFile(
     files.map((m) => m.id),
     fetchData,
   );
-  const deserialized: FileEntity[] = serberFileEntityToDB.deserialize(items, { [SYMBOL_SERBER_FILES]: files });
+  const deserialized: FileEntity[] = serberInstances.serberFileEntityToDB.deserialize(items, {
+    [SYMBOL_SERBER_FILES]: files,
+  });
   return deserialized;
 }
