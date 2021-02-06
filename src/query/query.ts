@@ -2,7 +2,7 @@ import { Entity, FileEntity } from '../entity';
 import { getClassNameByClassOrClassName } from '../registrator';
 import { convertDBItemsToEntities, Manager } from '../manager';
 import { Edge } from '../edge';
-import { serberEntitiesToPointer } from '../serber';
+import { serberInstances } from '../serber';
 import { getHash } from '../utils';
 import { QueryBuilder } from './builder';
 
@@ -92,7 +92,7 @@ export class Query<T extends Entity> {
 
   public equalTo(key: string, value: any): this {
     if (value instanceof Entity || value instanceof FileEntity) {
-      const pointer = serberEntitiesToPointer.serialize(value);
+      const pointer = serberInstances.serberEntitiesToPointer.serialize(value);
       return this.append('where', { [key]: pointer });
     } else if (value instanceof Query) {
       return this.matchesQuery(key, value);
@@ -102,7 +102,7 @@ export class Query<T extends Entity> {
   }
 
   public contains(key: string, value: any[]) {
-    const raw = serberEntitiesToPointer.serialize(value);
+    const raw = serberInstances.serberEntitiesToPointer.serialize(value);
     return this.append('contains', { [key]: raw });
   }
 

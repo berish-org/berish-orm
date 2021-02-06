@@ -1,9 +1,6 @@
-import { SYMBOL_ATTRIBUTES } from '../const';
 import { generateId } from '../utils';
 import { Manager } from '../manager';
-import { serberFullRaw } from '../serber/instances';
 import * as methods from './methods';
-import { ENGINE_METHOD_DIGESTS } from 'constants';
 
 export class FileEntity {
   private _cacheData: Buffer = null;

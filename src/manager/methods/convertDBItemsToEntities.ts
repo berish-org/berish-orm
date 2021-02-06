@@ -2,7 +2,7 @@ import LINQ from '@berish/linq';
 import { Query } from '../..';
 import { IBaseDBItem } from '../../baseDBAdapter';
 import { Entity, FileEntity } from '../../entity';
-import { serberEntityToDB, plugins } from '../../serber';
+import { serberInstances, plugins } from '../../serber';
 import { Manager } from '../manager';
 
 const {
@@ -29,7 +29,7 @@ export async function convertDBItemsToEntities<T extends Entity = Entity>(
     const forLoadEntities: Entity[] = [];
     const forLoadFiles: FileEntity[] = [];
 
-    const deserialized: Entity[] = serberEntityToDB.deserialize(items, {
+    const deserialized: Entity[] = serberInstances.serberEntityToDB.deserialize(items, {
       [SYMBOL_SERBER_ENTITY_CLASSNAME]: className,
       [SYMBOL_SERBER_CACHE_ENTITIES]: cacheEntities,
       [SYMBOL_SERBER_CACHE_ENTITIES_IGNORE_IDS]: cacheIgnoreIds,
