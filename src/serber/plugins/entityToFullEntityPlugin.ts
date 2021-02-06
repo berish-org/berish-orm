@@ -4,7 +4,7 @@ import { Entity } from '../../entity';
 import { IRaw, RawTypeEnum, isRaw } from '../abstract';
 import { createEntity } from '../../registrator';
 import { setIsFetched } from '../../entity/methods';
-import { serberFullRaw } from '../instances/serberFullRaw';
+import { serberInstances } from '../instances';
 import { getDate, getTimestamp } from '../../utils';
 
 export interface IFullEntity extends IRaw<RawTypeEnum.fullEntity> {
@@ -23,7 +23,7 @@ export const entityToFullEntityPlugin: ISerberPlugin<Entity, IFullEntity, {}> = 
   serialize: (obj, options) => {
     const className = obj.className;
     const { id, createdAt, updatedAt, ...attributes } = obj.attributes;
-    const serialized = serberFullRaw.serialize(attributes);
+    const serialized = serberInstances.serberFullRaw.serialize(attributes);
     const out: IFullEntity = {
       __type__: RawTypeEnum.fullEntity,
       id,
@@ -36,7 +36,7 @@ export const entityToFullEntityPlugin: ISerberPlugin<Entity, IFullEntity, {}> = 
   },
   deserialize: (obj, options) => {
     const { id, className, createdAt, updatedAt, __type__, ...attributes } = obj;
-    const deserialized = serberFullRaw.deserialize(attributes);
+    const deserialized = serberInstances.serberFullRaw.deserialize(attributes);
     const entity = createEntity(className, {
       id,
       createdAt: getDate(createdAt),

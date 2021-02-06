@@ -419,11 +419,6 @@
     "@berish/pathof" "^1.1.0"
     "@berish/typeof" "^1.0.0"
 
-"@berish/try-call@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@berish/try-call/-/try-call-1.0.0.tgz#56cea05785b38a524787298c11b955dfaf8519dc"
-  integrity sha512-EN0ZjALcgidR22RZyerhPkbaRZXsbPrTJUMhbnze7FQwK7rmgQK8EAAgFRNl878MBIBvkpFc0qy7XVU18CA7Cg==
-
 "@berish/typeof@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@berish/typeof/-/typeof-1.0.0.tgz#d8ce13b7d1e51ab894a7f44f2aea60e35fd8b832"
@@ -737,24 +732,10 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@types/parse@^2.18.3":
-  version "2.18.3"
-  resolved "https://registry.yarnpkg.com/@types/parse/-/parse-2.18.3.tgz#2f6b1a2fb97d82cba3579e90b3f11ba23dc44f10"
-  integrity sha512-HsQQxlsfBPblottxCN7Cu9iZqpVdXomyhblDNlY8vEWdYv+brIdIx9hSILRshUZZoZKHwgnuTL8YHXeRQ4R13A==
-  dependencies:
-    "@types/node" "*"
-
 "@types/prettier@^2.0.0":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.1.5.tgz#b6ab3bba29e16b821d84e09ecfaded462b816b00"
   integrity sha512-UEyp8LwZ4Dg30kVU2Q3amHHyTn1jEdhCIE59ANed76GaT1Vp76DD3ZWSAxgCrw6wJ0TqeoBpqmfUHiUDPs//HQ==
-
-"@types/rethinkdb@^2.3.16":
-  version "2.3.16"
-  resolved "https://registry.yarnpkg.com/@types/rethinkdb/-/rethinkdb-2.3.16.tgz#fcac2dc0ca6e39921b086526a681d8369470c788"
-  integrity sha512-eswAHpyI5+xhyYxu3NK2IrFlBjJV4/5uJl+oHZ2HV07RcJTr9cDYkwzZ22riAsO9jrIPLMSIn0752PL8sBSkUw==
-  dependencies:
-    "@types/node" "*"
 
 "@types/stack-utils@^2.0.0":
   version "2.0.0"
@@ -1018,17 +999,12 @@ berish-linq@^2.0.0:
   dependencies:
     berish-collection "^2.0.1"
 
-berish-ringle@^2.0.0:
+berish-ringle@^2.0.0, berish-ringle@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/berish-ringle/-/berish-ringle-2.1.0.tgz#1a223b006b1c0aa9855dea18283b6fb4d6f2474e"
   integrity sha512-oc4O0NaNF2yd5TGPdrdP9wDUCJAkMicz4RtzH1pjAP0bwdoXjt7BYwGOHepTmonBCe/nfKHI9K0gH7+VHeRrdQ==
   dependencies:
     berish-collection "^2.0.1"
-
-"bluebird@>= 2.3.2 < 3":
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
-  integrity sha1-U0uQM8AiyVecVro7Plpcqvu2UOE=
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -3217,13 +3193,6 @@ ret@~0.1.10:
   version "0.1.15"
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
   integrity sha512-TTlYpa+OL+vMMNG24xSlQGEJ3B/RzEfUlLct7b5G/ytav+wPrplCpVMFuwzXbkecJrb6IYo1iFb0S9v37754mg==
-
-rethinkdb@^2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/rethinkdb/-/rethinkdb-2.4.2.tgz#9c5d8dde3300ddacfdfae0fc8ded3754602d447a"
-  integrity sha512-6DzwqEpFc8cqesAdo07a845oBRxLiHvWzopTKBo/uY2ypGWIsJQFJk3wjRDtSEhczxJqLS0jnf37rwgzYAw8NQ==
-  dependencies:
-    bluebird ">= 2.3.2 < 3"
 
 rimraf@^3.0.0:
   version "3.0.2"

@@ -60,6 +60,7 @@
     "@berish/linq": "^1.1.0",
     "@berish/serber": "^1.3.0",
     "berish-guid": "^2.0.0",
+    "berish-ringle": "^2.1.0",
     "crypto-js": "^4.0.0"
   }
 }

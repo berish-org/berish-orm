@@ -13,7 +13,7 @@ import {
   SYMBOL_SERBER_FOR_LOAD_FILE_ENTITIES,
 } from './fileEntityToFileEntityPointerPlugin';
 import { setIsFetched } from '../../entity/methods';
-import { serberEntitiesToPointer } from '../instances/serberEntitiesToPointer';
+import { serberInstances } from '../instances';
 import { getDate, getTimestamp } from '../../utils';
 
 /**
@@ -45,7 +45,7 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
     const out: IBaseDBItem = { id, createdAt: getTimestamp(createdAt), updatedAt: getTimestamp(updatedAt) };
     const entries = Object.entries(attributes);
     for (const [key, value] of entries) {
-      const serialized = serberEntitiesToPointer.serialize(value, {
+      const serialized = serberInstances.serberEntitiesToPointer.serialize(value, {
         ...options,
         [SERBER_KEY_SYMBOL]: key,
         [SERBER_PARENT_OBJECT_SYMBOL]: obj,
@@ -80,7 +80,7 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
       });
 
     for (const [key, value] of entries) {
-      const deserialized = serberEntitiesToPointer.deserialize(value, {
+      const deserialized = serberInstances.serberEntitiesToPointer.deserialize(value, {
         ...options,
         [SYMBOL_SERBER_CACHE_ENTITIES]: cacheEntities,
         [SYMBOL_SERBER_CACHE_ENTITIES_IGNORE_IDS]: cacheEntitiesIgnoreIds,
