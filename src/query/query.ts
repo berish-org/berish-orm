@@ -187,8 +187,8 @@ export class Query<T extends Entity> {
     return manager.db.delete(this.json);
   }
 
-  public subscribe(manager: Manager, cb: (oldValues: T, newValues: T) => any, deep?: number) {
-    return manager.db.subscribe(this.json, async (oldValue, newValue) => {
+  public subscribe(manager: Manager, cb: (oldValues: T, newValues: T, newValueIndex?: number) => any, deep?: number) {
+    return manager.db.subscribe(this.json, async (oldValue, newValue, newValueIndex) => {
       if (cb) {
         const rawArray = [oldValue, newValue];
         const [oldValueDes, newValueDes] = await convertDBItemsToEntities<T>(
@@ -198,7 +198,7 @@ export class Query<T extends Entity> {
           deep,
           rawArray.map((m) => m && m.id).filter(Boolean),
         );
-        cb(oldValueDes, newValueDes);
+        cb(oldValueDes, newValueDes, newValueIndex);
       }
     });
   }
