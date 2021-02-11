@@ -3,6 +3,7 @@ export enum RawTypeEnum {
   fileEntityPointer = 'fep',
   fullEntity = 'fe',
   fullFileEntity = 'ffe',
+  fullQuery = 'fq',
 }
 
 /**

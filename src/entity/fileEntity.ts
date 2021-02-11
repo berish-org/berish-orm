@@ -9,6 +9,10 @@ export class FileEntity {
     return methods.fromJSON<FileEntity>(json);
   }
 
+  public static isEquals(entity1: FileEntity, entity2: FileEntity) {
+    return methods.isEquals(entity1, entity2);
+  }
+
   constructor() {
     this.attributes.id = generateId();
   }

@@ -15,6 +15,10 @@ export class Entity {
     return methods.fromJSON<TEntity>(json);
   }
 
+  public static isEquals(entity1: Entity, entity2: Entity) {
+    return methods.isEquals(entity1, entity2);
+  }
+
   public constructor() {
     this.attributes.id = generateId();
   }

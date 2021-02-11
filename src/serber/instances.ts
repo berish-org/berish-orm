@@ -7,6 +7,7 @@ import { entityToFullEntityPlugin } from './plugins/entityToFullEntityPlugin';
 import { fileEntityToFullFileEntityPlugin } from './plugins/fileEntitiyToFullFileEntityPlugin';
 import { fileEntityToBaseFileItemPlugin } from './plugins/fileEntityToBaseFileItemPlugin';
 import { fileEntityToFileEntityPointerPlugin } from './plugins/fileEntityToFileEntityPointerPlugin';
+import { queryToFullQueryPlugin } from './plugins/queryToFullQueryPlugin';
 import { undefinedDBPlugin } from './plugins/undefinedDBPlugin';
 
 class SerberInstances {
@@ -68,6 +69,7 @@ class SerberInstances {
       .addPlugin(plugins.arrayPlugin)
       .addPlugin(entityToFullEntityPlugin)
       .addPlugin(fileEntityToFullFileEntityPlugin)
+      .addPlugin(queryToFullQueryPlugin)
       .addPlugin(plugins.loopObjectPlugin);
   }
 }

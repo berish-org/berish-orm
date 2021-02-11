@@ -184,19 +184,33 @@ export class Manager {
 
   private _db_subscribe = (
     data: QueryData<QueryDataSchema>,
-    callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem) => any,
+    callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem, newValueIndex?: number) => any,
     onError?: (reason: any) => any,
   ): (() => any) => {
     const hash = Query.getHash(data);
     const methodName = 'subscribe';
     const eventName = `${hash}_${methodName}`;
 
-    const eventHash = this.emitter.cacheSubscribe<{ oldValue: IBaseDBItem; newValue: IBaseDBItem }>(
+    const eventHash = this.emitter.cacheSubscribe<{
+      oldValue: IBaseDBItem;
+      newValue: IBaseDBItem;
+      newValueIndex?: number;
+    }>(
       eventName,
       (callback) => {
         const onDisconnect = this._dbAdapter.subscribe(
           data,
-          (oldValue, newValue) => callback({ oldValue, newValue }),
+          async (oldValue, newValue) => {
+            if (!oldValue && newValue) {
+              const items = await this.db.find(Query.fromJSON(data).pluck('id').json);
+              const valueIndex = (items || []).map((m) => m && m.id).indexOf(newValue.id);
+              const newValueIndex = valueIndex === -1 ? undefined : valueIndex;
+
+              callback({ oldValue, newValue, newValueIndex });
+            } else {
+              callback({ oldValue, newValue });
+            }
+          },
           (reason) => onError && onError(reason),
         );
 
@@ -205,7 +219,7 @@ export class Manager {
           disconnect();
         };
       },
-      ({ oldValue, newValue }) => callback(oldValue, newValue),
+      ({ oldValue, newValue, newValueIndex }) => callback(oldValue, newValue, newValueIndex),
     );
     return () => this.emitter.off(eventHash);
   };
