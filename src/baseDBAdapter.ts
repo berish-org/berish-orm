@@ -11,8 +11,8 @@ export const baseDBMethods: string[] = ['count', 'get', 'create', 'update', 'del
 
 export abstract class BaseDBAdapter<IInitializeParams> {
   params: IInitializeParams;
-  deepFetch?: boolean;
   public abstract initialize(params: IInitializeParams): Promise<void>;
+  public abstract close(): Promise<void>;
   public abstract create(table: string, items: IBaseDBItem[]): Promise<void>;
   public abstract update(table: string, items: IBaseDBItem[]): Promise<void>;
   public abstract index(table: string, indexName: string, keys?: string[]): void;

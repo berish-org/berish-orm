@@ -19,6 +19,14 @@ export class Manager {
     return this._emitter;
   }
 
+  public get isInitializedDbAdapter() {
+    return !!this._dbAdapter;
+  }
+
+  public get isInitializedFileAdapter() {
+    return !!this._fileAdapter;
+  }
+
   /**
    * Объект для работы с dbAdapter.
    * Все методы имеют непрямой доступ к адаптеру, используют проверку разрешений и оптимизацию перед реальными запросами.
@@ -75,6 +83,20 @@ export class Manager {
     if (!fileAdapter) throw new Error(`fileAdapter is undefined`);
     this._fileAdapter = new fileAdapter();
     await this._fileAdapter.initialize(params);
+  }
+
+  public async closeDbAdapter() {
+    if (this.isInitializedDbAdapter) {
+      await this._dbAdapter.close();
+      this._dbAdapter = null;
+    }
+  }
+
+  public async closeFileAdapter() {
+    if (this.isInitializedFileAdapter) {
+      await this._fileAdapter.close();
+      this._fileAdapter = null;
+    }
   }
 
   /**
