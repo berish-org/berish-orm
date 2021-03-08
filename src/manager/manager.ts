@@ -236,10 +236,7 @@ export class Manager {
           (reason) => onError && onError(reason),
         );
 
-        return async () => {
-          const disconnect = await onDisconnect;
-          disconnect();
-        };
+        return () => onDisconnect && onDisconnect();
       },
       ({ oldValue, newValue, newValueIndex }) => callback(oldValue, newValue, newValueIndex),
     );
