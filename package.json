@@ -1,6 +1,6 @@
 {
   "name": "@berish/orm",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "ORM",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
