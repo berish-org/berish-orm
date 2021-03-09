@@ -1,5 +1,5 @@
 import LINQ from '@berish/linq';
-import EventEmitter from '@berish/emitter';
+import { CacheEmitter } from '@berish/emitter';
 import { Entity, FileEntity } from '../entity';
 import { QueryData, QueryDataSchema, Query } from '../query';
 import { BaseDBAdapter, IBaseDBItem } from '../baseDBAdapter';
@@ -9,14 +9,14 @@ import * as methods from './methods';
 export class Manager {
   private _dbAdapter: BaseDBAdapter<any> = null;
   private _fileAdapter: BaseFileAdapter<any> = null;
-  private _emitter: EventEmitter<any> = null;
+  private _cacheEmitter: CacheEmitter = null;
 
   /**
    * Emitter для работы с событиями внутри менеджера
    */
-  public get emitter() {
-    if (!this._emitter) this._emitter = new EventEmitter();
-    return this._emitter;
+  public get cacheEmitter() {
+    if (!this._cacheEmitter) this._cacheEmitter = new CacheEmitter();
+    return this._cacheEmitter;
   }
 
   public get isInitializedDbAdapter() {
@@ -180,28 +180,28 @@ export class Manager {
     const query = Query.fromJSON(data);
     const methodName = 'get';
     const eventName = `${query.hash}_${methodName}`;
-    return this.emitter.cacheCall(eventName, () => this._dbAdapter.get(data));
+    return this.cacheEmitter.call(eventName, () => this._dbAdapter.get(data));
   };
 
   private _db_count = (data: QueryData<QueryDataSchema>): Promise<number> => {
     const query = Query.fromJSON(data);
     const methodName = 'count';
     const eventName = `${query.hash}_${methodName}`;
-    return this.emitter.cacheCall(eventName, () => this._dbAdapter.count(data));
+    return this.cacheEmitter.call(eventName, () => this._dbAdapter.count(data));
   };
 
   private _db_delete = (data: QueryData<QueryDataSchema>): Promise<void> => {
     const query = Query.fromJSON(data);
     const methodName = 'delete';
     const eventName = `${query.hash}_${methodName}`;
-    return this.emitter.cacheCall(eventName, () => this._dbAdapter.delete(data));
+    return this.cacheEmitter.call(eventName, () => this._dbAdapter.delete(data));
   };
 
   private _db_find = (data: QueryData<QueryDataSchema>): Promise<IBaseDBItem[]> => {
     const query = Query.fromJSON(data);
     const methodName = 'find';
     const eventName = `${query.hash}_${methodName}`;
-    return this.emitter.cacheCall(eventName, () => this._dbAdapter.find(data));
+    return this.cacheEmitter.call(eventName, () => this._dbAdapter.find(data));
   };
 
   private _db_subscribe = (
@@ -213,7 +213,7 @@ export class Manager {
     const methodName = 'subscribe';
     const eventName = `${hash}_${methodName}`;
 
-    const eventHash = this.emitter.cacheSubscribe<{
+    const eventHash = this.cacheEmitter.subscribe<{
       oldValue: IBaseDBItem;
       newValue: IBaseDBItem;
       newValueIndex?: number;
@@ -240,7 +240,7 @@ export class Manager {
       },
       ({ oldValue, newValue, newValueIndex }) => callback(oldValue, newValue, newValueIndex),
     );
-    return () => this.emitter.off(eventHash);
+    return () => this.cacheEmitter.unsubscribe(eventHash);
   };
 
   private _file_create = (items: IBaseFileItem[]): Promise<void> => {

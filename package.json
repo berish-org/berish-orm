@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@berish/class": "^1.0.2",
-    "@berish/emitter": "^1.0.0",
+    "@berish/emitter": "^1.4.1",
     "@berish/linq": "^1.1.0",
     "@berish/serber": "^1.3.0",
     "berish-guid": "^2.0.0",
