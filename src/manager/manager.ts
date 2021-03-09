@@ -65,9 +65,10 @@ export class Manager {
    * @param dbAdapter Адаптер базы данных
    * @param params Параметры для инициализации адаптера базы данных
    */
-  public async initDbAdapter<T extends new () => BaseDBAdapter<any>>(dbAdapter: T, params: InstanceType<T>['params']) {
+  public async initDbAdapter<T extends BaseDBAdapter<any>>(dbAdapter: T, params: T['params']) {
     if (!dbAdapter) throw new Error(`dbAdapter is undefined`);
-    this._dbAdapter = new dbAdapter();
+
+    this._dbAdapter = dbAdapter;
     await this._dbAdapter.initialize(params);
   }
 
@@ -76,12 +77,10 @@ export class Manager {
    * @param fileAdapter Адаптер работы с файлами
    * @param params Параметры для инициализации файлового адаптера
    */
-  public async initFileAdapter<T extends new () => BaseFileAdapter<any>>(
-    fileAdapter: T,
-    params: InstanceType<T>['params'],
-  ) {
+  public async initFileAdapter<T extends BaseFileAdapter<any>>(fileAdapter: T, params: T['params']) {
     if (!fileAdapter) throw new Error(`fileAdapter is undefined`);
-    this._fileAdapter = new fileAdapter();
+
+    this._fileAdapter = fileAdapter;
     await this._fileAdapter.initialize(params);
   }
 
