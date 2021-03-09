@@ -24,5 +24,5 @@ export abstract class BaseDBAdapter<IInitializeParams> {
     data: QueryData<QueryDataSchema>,
     callback: (oldValue: IBaseDBItem, newValue: IBaseDBItem) => any,
     onError: (reason: any) => any,
-  ): () => any;
+  ): (() => any) | Promise<() => any>;
 }

@@ -218,8 +218,8 @@ export class Manager {
       newValueIndex?: number;
     }>(
       eventName,
-      (callback) => {
-        const onDisconnect = this._dbAdapter.subscribe(
+      async (callback) => {
+        const onDisconnect = await this._dbAdapter.subscribe(
           data,
           async (oldValue, newValue) => {
             if (!oldValue && newValue) {
