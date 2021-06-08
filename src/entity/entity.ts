@@ -36,12 +36,11 @@ export class Entity {
   }
 
   public set(key: string, value: any) {
-    if (typeof value === 'undefined') return this.unset(key);
     this.attributes[key] = value;
   }
 
   public unset(key: string) {
-    this.attributes[key] = null;
+    this.set(key, null);
   }
 
   public getSystem(key: string) {

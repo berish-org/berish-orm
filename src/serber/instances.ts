@@ -8,7 +8,6 @@ import { fileEntityToFullFileEntityPlugin } from './plugins/fileEntitiyToFullFil
 import { fileEntityToBaseFileItemPlugin } from './plugins/fileEntityToBaseFileItemPlugin';
 import { fileEntityToFileEntityPointerPlugin } from './plugins/fileEntityToFileEntityPointerPlugin';
 import { queryToFullQueryPlugin } from './plugins/queryToFullQueryPlugin';
-import { undefinedDBPlugin } from './plugins/undefinedDBPlugin';
 
 class SerberInstances {
   private _serberEntitiesToPointer = null;
@@ -36,7 +35,7 @@ class SerberInstances {
 
   public createSerberEntitiesToPointer() {
     return new Serber()
-      .addPlugin(undefinedDBPlugin)
+      .addPlugin(plugins.undefinedPlugin)
       .addPlugin(plugins.nullPlugin)
       .addPlugin(plugins.boolPlugin)
       .addPlugin(plugins.numberPlugin)
@@ -59,7 +58,7 @@ class SerberInstances {
 
   public createSerberFullRaw() {
     return new Serber()
-      .addPlugin(undefinedDBPlugin)
+      .addPlugin(plugins.undefinedPlugin)
       .addPlugin(plugins.nullPlugin)
       .addPlugin(plugins.boolPlugin)
       .addPlugin(plugins.numberPlugin)

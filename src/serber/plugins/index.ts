@@ -5,4 +5,3 @@ export * from './fileEntitiyToFullFileEntityPlugin';
 export * from './fileEntityToBaseFileItemPlugin';
 export * from './fileEntityToFileEntityPointerPlugin';
 export * from './queryToFullQueryPlugin';
-export * from './undefinedDBPlugin';

@@ -43,7 +43,7 @@ export const entityToBaseDBItemPlugin: ISerberPlugin<Entity, IBaseDBItem, IEntit
     const { id, createdAt, updatedAt, ...attributes } = obj.attributes;
 
     const out: IBaseDBItem = { id, createdAt: getTimestamp(createdAt), updatedAt: getTimestamp(updatedAt) };
-    const entries = Object.entries(attributes);
+    const entries = Object.entries(attributes).filter(([key, value]) => typeof value !== 'undefined');
     for (const [key, value] of entries) {
       const serialized = serberInstances.serberEntitiesToPointer.serialize(value, {
         ...options,
