@@ -14,6 +14,7 @@ export * from './getPlain';
 export * from './getSystemAttributes';
 export * from './getUpdatedAt';
 export * from './isEquals';
+export * from './setClassName';
 export * from './setFileName';
 export * from './setIsFetched';
 export * from './subscribe';

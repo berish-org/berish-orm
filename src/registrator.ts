@@ -2,6 +2,7 @@ import LINQ from '@berish/linq';
 import type from '@berish/typeof';
 import { Registrator } from '@berish/class';
 import { Entity, methods } from './entity';
+import { setClassName } from './entity/methods';
 
 const registrator = new Registrator();
 
@@ -61,6 +62,7 @@ export function createEntity(className: string, attributes?: methods.IAttributes
   const arrayAttributes = Array.isArray(attributes) ? attributes : [attributes];
   const entities = LINQ.from(arrayAttributes).select((m) => {
     const entity = new cls();
+    setClassName(entity, className);
     if (cls.fields) {
       for (const key of cls.fields) {
         entity.set(key, void 0);
