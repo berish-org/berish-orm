@@ -183,6 +183,12 @@ export class Query<T extends Entity> {
     return response as T[];
   }
 
+  public async first(manager: Manager, deep?: number): Promise<T> {
+    const items = await this.limit(1).find(manager, deep);
+
+    return items && items[0];
+  }
+
   public async delete(manager: Manager) {
     return manager.db.delete(this.json);
   }
